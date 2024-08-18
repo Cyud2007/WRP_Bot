@@ -1,0 +1,38 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
+}
+
+group 'com.code'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'net.dv8tion:JDA:5.0.2'
+    implementation 'org.slf4j:slf4j-api:2.0.0'
+    implementation 'org.slf4j:slf4j-simple:2.0.0'
+}
+
+application {
+    mainClassName = 'com.code.Main'
+}
+
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'Main',
+                'Implementation-Title': 'Discord',
+                'Implementation-Version': 1.0
+        )
+    }
+}
+
+shadowJar {
+    archiveBaseName.set('Discord_WRP')
+    archiveVersion.set('0.0.1')
+    archiveClassifier.set('beta')
+}

@@ -1,0 +1,246 @@
+package com.code.commands;
+
+
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.interactions.modals.Modal;
+import net.dv8tion.jda.api.interactions.modals.ModalMapping;
+import net.dv8tion.jda.api.interactions.components.text.TextInput;
+import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Role;
+
+import java.awt.Color;
+import java.io.*;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
+
+public class EmbedCommand {
+
+    private static final String DATA_FILE = "countrydata.txt";
+    private static final AtomicInteger requestCounter = new AtomicInteger(1);
+    private final String targetChannelId = "1273338936177197138"; // ID канала для отправки заявки
+    private final String roleId = "1274822435597717565"; // ID роли для выдачи
+
+    // Хранилище для отслеживания состояния заявки
+    private final Map<String, String> requestStates = new ConcurrentHashMap<>();
+
+    public EmbedCommand() {
+        loadRequestCounter();
+    }
+
+    private void loadRequestCounter() {
+        try (BufferedReader reader = new BufferedReader(new FileReader(DATA_FILE))) {
+            String line = reader.readLine();
+            if (line != null) {
+                requestCounter.set(Integer.parseInt(line));
+            }
+        } catch (IOException e) {
+            System.err.println("Не удалось загрузить счётчик заявок: " + e.getMessage());
+        }
+    }
+
+    private void saveRequestCounter() {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(DATA_FILE))) {
+            writer.write(String.valueOf(requestCounter.get()));
+        } catch (IOException e) {
+            System.err.println("Не удалось сохранить счётчик заявок: " + e.getMessage());
+        }
+    }
+
+    private boolean isUserAlreadyRegistered(Guild guild, User user) {
+        Member member = guild.getMember(user);
+        return member != null && member.getRoles().stream().anyMatch(role -> role.getId().equals(roleId));
+    }
+
+    public void execute(MessageReceivedEvent event) {
+        if (event.getMessage().getContentRaw().equalsIgnoreCase("!embed")) {
+            EmbedBuilder embed = new EmbedBuilder();
+            embed.setTitle("Зарегистрировать Страну");
+            embed.setDescription("Нажмите кнопку, чтобы зарегистрироваться");
+            embed.setColor(Color.BLUE);
+
+            // Отправляем сообщение с кнопкой в канал
+            event.getChannel().sendMessageEmbeds(embed.build())
+                    .setActionRow(Button.primary("send_request_button", "Отправить заявку"))
+                    .queue();
+        }
+    }
+
+    public void onButtonInteraction(ButtonInteractionEvent event) {
+        if (event.getComponentId().equals("send_request_button")) {
+            // Создаём текстовый инпут для ввода страны
+            TextInput countryInput = TextInput.create("country_input", "Введите вашу страну", TextInputStyle.SHORT)
+                    .setPlaceholder("Например: Америка")
+                    .setRequired(true)
+                    .build();
+
+            // Создаём модальное окно
+            Modal modal = Modal.create("request_modal", "Отправка заявки")
+                    .addActionRow(countryInput)
+                    .build();
+
+            // Отправляем модальное окно пользователю
+            event.replyModal(modal).queue();
+        }
+    }
+
+    public void onModalInteraction(ModalInteractionEvent event) {
+        if (event.getModalId().equals("request_modal")) {
+            // Получаем введённые данные
+            ModalMapping countryMapping = event.getValue("country_input");
+            String country = countryMapping.getAsString();
+
+            // Получаем пользователя, отправившего заявку
+            User user = event.getUser();
+
+            // Получаем номер заявки
+            int requestNumber = requestCounter.getAndIncrement();
+            saveRequestCounter();
+
+            // Создаём Embed сообщение
+            EmbedBuilder embed = new EmbedBuilder();
+            embed.setTitle("Новая заявка на регистрацию");
+            embed.setDescription(String.format("*%s* хочет зарегистрировать страну: *%s*", user.getAsTag(), country));
+            embed.setColor(Color.GREEN);
+            embed.setFooter("Номер заявки: #" + requestNumber);
+
+            String requestId = "request_" + requestNumber;
+            requestStates.put(requestId, "pending"); // Устанавливаем состояние заявки
+
+            // Отправляем сообщение в нужный канал с кнопками Принять и Отклонить
+            event.getJDA().getTextChannelById(targetChannelId).sendMessageEmbeds(embed.build())
+                    .setActionRow(
+                            Button.success("accept_request_button:" + requestId + ":" + user.getId() + ":" + country, "Принять"),
+                            Button.danger("reject_request_button:" + requestId + ":" + user.getId(), "Отклонить")
+                    ).queue();
+
+            // Сообщаем пользователю об успешной отправке
+            event.reply("Ваша заявка успешно отправлена! Номер заявки: #" + requestNumber).setEphemeral(true).queue();
+        }
+    }
+
+    public void onButtonInteractionForDecision(ButtonInteractionEvent event) {
+        String[] parts = event.getComponentId().split(":");
+        String action = parts[0];
+        String requestId = parts[1];
+        String userId = parts[2];
+
+        // Проверяем, было ли уже принято решение по этой заявке
+        String requestState = requestStates.get(requestId);
+        if (requestState == null) {
+            event.reply("Ошибка: Заявка не найдена.").setEphemeral(true).queue();
+            return;
+        }
+        if (!requestState.equals("pending")) {
+            event.reply("Ошибка: Заявка уже обработана.").setEphemeral(true).queue();
+            return;
+        }
+
+        Guild guild = event.getGuild();
+        if (guild == null) {
+            event.reply("Ошибка: Не удалось найти гильдию.").setEphemeral(true).queue();
+            return;
+        }
+
+        // Получаем пользователя через кеш или API
+        guild.retrieveMemberById(userId).queue(member -> {
+            if (member == null) {
+                event.reply("Ошибка: Не удалось найти пользователя.").setEphemeral(true).queue();
+                return;
+            }
+
+            User user = member.getUser();
+            String nickname = member.getEffectiveName(); // Получаем ник пользователя
+
+            if (action.equals("accept_request_button")) {
+                String newCountry = parts[3];
+
+                // Проверяем, зарегистрирован ли пользователь
+                if (isUserAlreadyRegistered(guild, user)) {
+                    event.reply("Пользователь уже зарегистрирован.").setEphemeral(true).queue();
+                    return;
+                }
+
+                // Меняем ник пользователя на название страны
+                guild.modifyNickname(member, newCountry).queue();
+
+                // Выдаем роль пользователю
+                Role role = guild.getRoleById(roleId);
+                if (role != null) {
+                    guild.addRoleToMember(member, role).queue(
+                            success -> {
+                                // Роль успешно выдана
+                                event.reply("Роль успешно выдана!").setEphemeral(true).queue();
+                            },
+                            error -> {
+                                // Ошибка при выдаче роли
+                                System.err.println("Не удалось выдать роль пользователю " + user.getId() + ": " + error.getMessage());
+                                event.reply("Не удалось выдать роль пользователю.").setEphemeral(true).queue();
+                            }
+                    );
+                } else {
+                    event.reply("Роль не найдена.").setEphemeral(true).queue();
+                }
+
+                // Создаем Embed сообщение для личных сообщений
+                EmbedBuilder dmEmbed = new EmbedBuilder();
+                dmEmbed.setTitle("Заявка принята");
+                dmEmbed.setDescription("Ваша заявка принята!");
+                dmEmbed.setColor(Color.GREEN);
+
+                // Отправляем сообщение в ЛС пользователю
+                user.openPrivateChannel().queue(channel -> {
+                    channel.sendMessageEmbeds(dmEmbed.build()).queue();
+                });
+
+                // Создаем Embed сообщение для канала
+                EmbedBuilder channelEmbed = new EmbedBuilder();
+                channelEmbed.setTitle("Игрок принят");
+                channelEmbed.setDescription("Заявка принята! Игрок " + nickname + " успешно принят.");
+                channelEmbed.setColor(Color.BLUE);
+
+                // Отправляем сообщение в канал о принятии заявки
+                guild.getTextChannelById(targetChannelId)
+                        .sendMessageEmbeds(channelEmbed.build()).queue();
+
+                // Обновляем состояние заявки
+                requestStates.put(requestId, "accepted");
+
+            } else if (action.equals("reject_request_button")) {
+                // Создаем Embed сообщение для личных сообщений об отклонении заявки
+                EmbedBuilder dmEmbed = new EmbedBuilder();
+                dmEmbed.setTitle("Заявка отклонена");
+                dmEmbed.setDescription("Ваша заявка была отклонена.");
+                dmEmbed.setColor(Color.RED);
+
+                // Отправляем сообщение в ЛС пользователю
+                user.openPrivateChannel().queue(channel -> {
+                    channel.sendMessageEmbeds(dmEmbed.build()).queue();
+                });
+
+                // Создаем Embed сообщение для канала
+                EmbedBuilder channelEmbed = new EmbedBuilder();
+                channelEmbed.setTitle("Заявка отклонена");
+                channelEmbed.setDescription("Заявка отклонена. Игрок " + nickname + " не принят.");
+                channelEmbed.setColor(Color.RED);
+
+                // Отправляем сообщение в канал об отклонении заявки
+                guild.getTextChannelById(targetChannelId)
+                        .sendMessageEmbeds(channelEmbed.build()).queue();
+
+                // Обновляем состояние заявки
+                requestStates.put(requestId, "rejected");
+            }
+        }, error -> {
+            System.err.println("Ошибка: Не удалось найти пользователя. " + error.getMessage());
+            event.reply("Ошибка: Не удалось найти пользователя.").setEphemeral(true).queue();
+        });
+    }
+}
