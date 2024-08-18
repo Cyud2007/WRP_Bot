@@ -16,27 +16,25 @@ public class InfoCommand extends Command {
         return Commands.slash("info", "Отправляет информационное сообщение в формате embed.");
     }
 
-    // Метод для обработки текстовых сообщений, если это нужно
     @Override
     public void execute(@NotNull MessageReceivedEvent event) {
-        // Добавьте логику для обработки текстовых сообщений здесь, если необходимо
-        // Например, отправка embed сообщения как ответ на текстовое сообщение
+
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setTitle("Bot Information");
         embedBuilder.setDescription("This bot is designed to work with the WPG server.");
-        embedBuilder.setColor(new Color(255, 165, 0)); // Оранжевый цвет линии
+        embedBuilder.setColor(new Color(255, 165, 0)); 
         embedBuilder.addField("Version", "2.0.1", false);
         embedBuilder.addField("Authors", "Cyud, poslaya_sairys", false);
         embedBuilder.setFooter("GWRP Bot", null);
 
         event.getChannel().sendMessageEmbeds(embedBuilder.build()).queue();
-    }       // Метод для обработки команд через слэш
+    }    
     @Override
     public void execute(@NotNull SlashCommandInteractionEvent event) {
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setTitle("Bot Information");
         embedBuilder.setDescription("This bot is designed to work with the WPG server.");
-        embedBuilder.setColor(new Color(255, 165, 0)); // Orange color for the line
+        embedBuilder.setColor(new Color(255, 165, 0));
         embedBuilder.addField("Version", "2.0.1", false);
         embedBuilder.addField("Authors", "Cyud, poslaya_sairys", false);
         embedBuilder.setFooter("WPG Bot", null);

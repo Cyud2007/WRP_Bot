@@ -17,26 +17,25 @@ import java.util.Properties;
 
 public class BotListener extends ListenerAdapter {
 
-
+    // Слеш команды
     private final PingCommand pingCommand = new PingCommand();
 
+    // Текстовые команды
     private final TestCommand testCommand = new TestCommand();
     private final EmbedCommand embedCommand = new EmbedCommand();
 
 
-
-
     private final String prefix;
-    private final String roleId; // ID роли для назначения
+    private final String roleId; 
 
     public BotListener() {
-        // Загрузка префикса и ID роли из файла bot.properties
+ 
         Properties properties = new Properties();
         try (InputStream input = getClass().getClassLoader().getResourceAsStream("bot.properties")) {
             if (input != null) {
                 properties.load(input);
                 this.prefix = properties.getProperty("prefix", "!");
-                this.roleId = properties.getProperty("role_id", "1273011992298258544"); // Замените ROLE_ID на значение по умолчанию
+                this.roleId = properties.getProperty("role_id", "1273011992298258544"); 
             } else {
                 throw new RuntimeException("bot.properties not found in classpath");
             }
@@ -66,7 +65,7 @@ public class BotListener extends ListenerAdapter {
                     testCommand.execute(event);
                     break;
                 case "embed":
-                    embedCommand.execute(event); // Добавляем обработку команды "embed"
+                    embedCommand.execute(event); 
                     break;
                 default:
                     event.getChannel().sendMessage("Unknown command").queue();
@@ -82,15 +81,15 @@ public class BotListener extends ListenerAdapter {
 
         // Проверка для кнопок EmbedCommand
         if (event.getComponentId().startsWith("accept_request_button") || event.getComponentId().startsWith("reject_request_button")) {
-            embedCommand.onButtonInteractionForDecision(event); // Обрабатываем новые кнопки в EmbedCommand
+            embedCommand.onButtonInteractionForDecision(event); 
         } else {
-            embedCommand.onButtonInteraction(event); // Существующий обработчик кнопок
+            embedCommand.onButtonInteraction(event); 
         }
     }
 
     @Override
     public void onModalInteraction(ModalInteractionEvent event) {
-        // Обрабатываем модальные окна для EmbedCommand
+ 
         embedCommand.onModalInteraction(event);
     }
 

@@ -18,13 +18,13 @@ public class Main {
     public static void main(String[] args) {
 
         try {
-            // Получение токена из конфигурации
+            
             String token = Config.getBotToken();
             if (token == null || token.isEmpty()) {
                 throw new IllegalArgumentException("Токен бота не может быть пустым.");
             }
 
-            // Создание и настройка JDA
+            
             JDABuilder builder = JDABuilder.createDefault(token)
                     .enableIntents(GatewayIntent.GUILD_MESSAGES, GatewayIntent.MESSAGE_CONTENT, GatewayIntent.GUILD_MEMBERS, GatewayIntent.DIRECT_MESSAGES, GatewayIntent.GUILD_PRESENCES)
                     .setActivity(Activity.playing("WRP"))
@@ -33,7 +33,7 @@ public class Main {
             JDA jda = builder.build();
             jda.awaitReady(); 
 
-            // Регистрация команд
+          
             CommandRegistry.registerCommands(jda);
 
             System.out.println("Бот успешно запущен и готов к работе.");

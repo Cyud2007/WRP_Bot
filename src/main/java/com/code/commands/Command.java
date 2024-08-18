@@ -7,19 +7,19 @@ import org.jetbrains.annotations.NotNull;
 
 public abstract class Command {
 
-    // Конструктор без параметров, если не требуется инициализация
+   
     public Command() {
     }
 
     // Метод для создания данных команды
     public abstract CommandData createCommand();
 
-    // Метод для выполнения команды в случае взаимодействия с SlashCommand
+    // Метод для выполнения SlashCommand
     public abstract void execute(@NotNull SlashCommandInteractionEvent event);
 
-    // Метод для выполнения команды в случае взаимодействия с текстовыми командами (если нужно)
+    // Метод для выполнения с текстовыми командами 
     public void execute(@NotNull MessageReceivedEvent event) {
-        // Реализация, если нужно
+    
     }
 }
 

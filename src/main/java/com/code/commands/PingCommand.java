@@ -19,9 +19,9 @@ public class PingCommand extends Command {
         embedBuilder.setTitle("Ping Command");
         embedBuilder.setDescription("Pong!");
         embedBuilder.addField("Latency", String.valueOf(event.getJDA().getGatewayPing()) + " ms", false);
-        embedBuilder.setColor(java.awt.Color.GREEN); // Цвет Embed сообщения
+        embedBuilder.setColor(java.awt.Color.GREEN); 
 
-        event.replyEmbeds(embedBuilder.build()).queue(); // Отправка Embed сообщения
+        event.replyEmbeds(embedBuilder.build()).queue();
     }
 
     @Override
