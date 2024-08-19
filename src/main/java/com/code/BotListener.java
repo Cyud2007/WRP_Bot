@@ -26,12 +26,10 @@ public class BotListener extends ListenerAdapter {
     private final TestCommand testCommand = new TestCommand();
     private final EmbedCommand embedCommand = new EmbedCommand();
 
-
     private final String prefix;
     private final String roleId; 
 
     public BotListener() {
- 
         Properties properties = new Properties();
         try (InputStream input = getClass().getClassLoader().getResourceAsStream("bot.properties")) {
             if (input != null) {
@@ -98,7 +96,7 @@ public class BotListener extends ListenerAdapter {
 
     @Override
     public void onModalInteraction(ModalInteractionEvent event) {
- 
+        // Обрабатываем модальные окна в EmbedCommand
         embedCommand.onModalInteraction(event);
     }
 
