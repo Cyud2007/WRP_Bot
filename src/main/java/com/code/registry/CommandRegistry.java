@@ -70,7 +70,8 @@ public class CommandRegistry {
         try {
             Class<?>[] classes = {
                     Class.forName("com.code.commands.PingCommand"),
-           
+                    Class.forName("com.code.commands.InfoCommand"),
+                    //Добавление новых комманд
             };
             for (Class<?> clazz : classes) {
                 if (Command.class.isAssignableFrom(clazz)) {

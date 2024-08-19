@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,6 +20,7 @@ public class BotListener extends ListenerAdapter {
 
     // Слеш команды
     private final PingCommand pingCommand = new PingCommand();
+    private final InfoCommand infoCommand = new InfoCommand();
 
     // Текстовые команды
     private final TestCommand testCommand = new TestCommand();
@@ -45,10 +47,14 @@ public class BotListener extends ListenerAdapter {
     }
 
     @Override
-    public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
+    public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
         switch (event.getName()) {
             case "ping":
                 pingCommand.execute(event);
+                break;
+            case "info":
+                infoCommand.execute(event);
+                break;
             default:
                 event.reply("Unknown command").queue();
                 break;
@@ -56,7 +62,7 @@ public class BotListener extends ListenerAdapter {
     }
 
     @Override
-    public void onMessageReceived(MessageReceivedEvent event) {
+    public void onMessageReceived(@NotNull MessageReceivedEvent event) {
         if (event.getMessage().getContentRaw().startsWith(prefix)) {
             String command = event.getMessage().getContentRaw().substring(prefix.length()).trim();
 
@@ -66,6 +72,9 @@ public class BotListener extends ListenerAdapter {
                     break;
                 case "embed":
                     embedCommand.execute(event); 
+                    break;
+                case "info":
+                    infoCommand.execute(event);
                     break;
                 default:
                     event.getChannel().sendMessage("Unknown command").queue();
@@ -94,7 +103,7 @@ public class BotListener extends ListenerAdapter {
     }
 
     @Override
-    public void onGuildMemberJoin(GuildMemberJoinEvent event) {
+    public void onGuildMemberJoin(@NotNull GuildMemberJoinEvent event) {
         Guild guild = event.getGuild();
         if (guild != null) {
             Role role = guild.getRoleById(roleId);

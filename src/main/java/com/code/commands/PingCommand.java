@@ -5,6 +5,7 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import org.jetbrains.annotations.NotNull;
 
 public class PingCommand extends Command {
 
@@ -14,11 +15,11 @@ public class PingCommand extends Command {
     }
 
     @Override
-    public void execute(SlashCommandInteractionEvent event) {
+    public void execute(@NotNull SlashCommandInteractionEvent event) {
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setTitle("Ping Command");
         embedBuilder.setDescription("Pong!");
-        embedBuilder.addField("Latency", String.valueOf(event.getJDA().getGatewayPing()) + " ms", false);
+        embedBuilder.addField("Latency", event.getJDA().getGatewayPing() + " ms", false);
         embedBuilder.setColor(java.awt.Color.GREEN); 
 
         event.replyEmbeds(embedBuilder.build()).queue();
