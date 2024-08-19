@@ -1,26 +1,41 @@
 package com.code;
 
-import com.code.commands.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+
+import org.jetbrains.annotations.NotNull;
+
+import com.code.commands.BalanceCommand;
+import com.code.commands.BuyCommand;
+import com.code.commands.EmbedCommand;
+import com.code.commands.InfoCommand;
+import com.code.commands.InventoryCommand;
+import com.code.commands.JobCommand;
+import com.code.commands.PingCommand;
+import com.code.commands.ShopCommand;
+import com.code.commands.TestCommand;
+
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
-import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import org.jetbrains.annotations.NotNull;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
 
 public class BotListener extends ListenerAdapter {
 
     // Слеш команды
     private final PingCommand pingCommand = new PingCommand();
     private final InfoCommand infoCommand = new InfoCommand();
+    private final ShopCommand shopCommand = new ShopCommand();
+    private final InventoryCommand inventoryCommand = new InventoryCommand();
+    private final BalanceCommand balanceCommand = new BalanceCommand();
+    private final JobCommand jobCommand = new JobCommand();
+    private final BuyCommand buyCommand = new BuyCommand();
 
     // Текстовые команды
     private final TestCommand testCommand = new TestCommand();
@@ -53,6 +68,21 @@ public class BotListener extends ListenerAdapter {
             case "info":
                 infoCommand.execute(event);
                 break;
+            case "shop":
+                shopCommand.execute(event);
+                break;
+            case "inventory":
+                inventoryCommand.execute(event);
+                break;
+            case "balance":
+                balanceCommand.execute(event);
+                break;
+            case "job":
+                jobCommand.execute(event);
+                break;
+            case "buy":
+                buyCommand.execute(event);
+                break;
             default:
                 event.reply("Unknown command").queue();
                 break;
@@ -69,10 +99,22 @@ public class BotListener extends ListenerAdapter {
                     testCommand.execute(event);
                     break;
                 case "embed":
-                    embedCommand.execute(event); 
+                    embedCommand.execute(event);
                     break;
-                case "info":
-                    infoCommand.execute(event);
+                case "shop":
+                    shopCommand.execute(event);
+                    break;
+                case "inventory":
+                    inventoryCommand.execute(event);
+                    break;
+                case "balance":
+                    balanceCommand.execute(event);
+                    break;
+                case "job":
+                    jobCommand.execute(event);
+                    break;
+                case "buy":
+                    buyCommand.execute(event);
                     break;
                 default:
                     event.getChannel().sendMessage("Unknown command").queue();

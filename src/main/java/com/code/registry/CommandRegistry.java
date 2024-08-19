@@ -71,6 +71,11 @@ public class CommandRegistry {
             Class<?>[] classes = {
                     Class.forName("com.code.commands.PingCommand"),
                     Class.forName("com.code.commands.InfoCommand"),
+                    Class.forName("com.code.commands.ShopCommand"),
+                    Class.forName("com.code.commands.JobCommand"),
+                    Class.forName("com.code.commands.InventoryCommand"),
+                    Class.forName("com.code.commands.BalanceCommand"),
+                    Class.forName("com.code.commands.BuyCommand"),
                     //Добавление новых комманд
             };
             for (Class<?> clazz : classes) {
