@@ -6,6 +6,8 @@ import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -168,6 +170,8 @@ public class EmbedCommand {
                 return;
             }
 
+            User admin = event.getUser();  // Получаем пользователя, который отклоняет заявку
+
             // Получаем пользователя через кеш или API
             guild.retrieveMemberById(userId).queue(member -> {
                 if (member == null) {
@@ -177,9 +181,18 @@ public class EmbedCommand {
 
                 User user = member.getUser();
 
+                // Генерация UNIX timestamp для временной метки
+                long timestamp = LocalDateTime.now().atZone(ZoneId.systemDefault()).toEpochSecond();
+
+                // Создаем Embed сообщение для личных сообщений
                 EmbedBuilder dmEmbed = new EmbedBuilder();
-                dmEmbed.setTitle("Заявка отклонена");
-                dmEmbed.setDescription("Ваша заявка была отклонена. Причина: " + reason);
+                dmEmbed.setTitle("🔔 Оповещения");
+                dmEmbed.setDescription(String.format(
+                        "**Администратор:** %s\n**Время:** <t:%d:F>\n\n⚠️ **Отклонения!** Ваша заявка на регистрацию была отклонена по причине: %s",
+                        admin.getAsTag(),
+                        timestamp,
+                        reason
+                ));
                 dmEmbed.setColor(Color.RED);
 
                 user.openPrivateChannel().queue(channel -> {
@@ -207,16 +220,7 @@ public class EmbedCommand {
         String action = parts[0];
         String requestId = parts[1];
         String userId = parts[2];
-
-        String requestState = requestStates.get(requestId);
-        if (requestState == null) {
-            event.reply("Ошибка: Заявка не найдена.").setEphemeral(true).queue();
-            return;
-        }
-        if (!requestState.equals("pending")) {
-            event.reply("Ошибка: Заявка уже обработана.").setEphemeral(true).queue();
-            return;
-        }
+        String country = (parts.length > 3) ? parts[3] : null;
 
         Guild guild = event.getGuild();
         if (guild == null) {
@@ -224,78 +228,38 @@ public class EmbedCommand {
             return;
         }
 
-        // Получаем пользователя через кеш или API
-        guild.retrieveMemberById(userId).queue(member -> {
-            if (member == null) {
-                event.reply("Ошибка: Не удалось найти пользователя.").setEphemeral(true).queue();
+        if (action.equals("accept_request_button")) {
+            if (isUserAlreadyRegistered(guild, event.getUser())) {
+                event.reply("Ошибка: Этот пользователь уже зарегистрирован.").setEphemeral(true).queue();
                 return;
             }
 
-            User user = member.getUser();
-            String nickname = member.getEffectiveName();
-
-            if (action.equals("accept_request_button")) {
-                String newCountry = parts[3];
-
-                if (isUserAlreadyRegistered(guild, user)) {
-                    event.reply("Пользователь уже зарегистрирован.").setEphemeral(true).queue();
+            guild.retrieveMemberById(userId).queue(member -> {
+                Role role = guild.getRoleById(roleId);
+                if (role == null) {
+                    event.reply("Ошибка: Не удалось найти роль.").setEphemeral(true).queue();
                     return;
                 }
 
-                // Меняем ник пользователя на название страны
-                guild.modifyNickname(member, newCountry).queue();
+                guild.addRoleToMember(member, role).queue();
+                event.reply("Заявка принята. Игрок " + member.getEffectiveName() + " добавлен в группу.").queue();
 
-                // Выдаем роль пользователю
-                Role role = guild.getRoleById(roleId);
-                if (role != null) {
-                    guild.addRoleToMember(member, role).queue(
-                            success -> {
-                                event.reply("Роль успешно выдана!").setEphemeral(true).queue();
-                            },
-                            error -> {
-                                System.err.println("Не удалось выдать роль пользователю " + user.getId() + ": " + error.getMessage());
-                                event.reply("Не удалось выдать роль пользователю.").setEphemeral(true).queue();
-                            }
-                    );
-                } else {
-                    event.reply("Роль не найдена.").setEphemeral(true).queue();
-                }
-
-                EmbedBuilder dmEmbed = new EmbedBuilder();
-                dmEmbed.setTitle("Заявка принята");
-                dmEmbed.setDescription("Ваша заявка принята!");
-                dmEmbed.setColor(Color.GREEN);
-
-                user.openPrivateChannel().queue(channel -> {
-                    channel.sendMessageEmbeds(dmEmbed.build()).queue();
-                });
-
-                EmbedBuilder channelEmbed = new EmbedBuilder();
-                channelEmbed.setTitle("Игрок принят");
-                channelEmbed.setDescription("Заявка принята! Игрок " + nickname + " успешно принят.");
-                channelEmbed.setColor(Color.BLUE);
+                EmbedBuilder acceptedEmbed = new EmbedBuilder();
+                acceptedEmbed.setTitle("Заявка одобрена");
+                acceptedEmbed.setDescription(String.format("Заявка на регистрацию страны %s была одобрена.", country));
+                acceptedEmbed.setColor(Color.GREEN);
 
                 guild.getTextChannelById(targetChannelId)
-                        .sendMessageEmbeds(channelEmbed.build()).queue();
+                        .sendMessageEmbeds(acceptedEmbed.build()).queue();
 
                 requestStates.put(requestId, "accepted");
 
-            } else if (action.equals("reject_request_button")) {
-                // Открываем модальное окно для ввода причины отклонения
-                TextInput rejectReasonInput = TextInput.create("reject_reason_input", "Причина отклонения", TextInputStyle.PARAGRAPH)
-                        .setPlaceholder("Например: Не соответствует требованиям...")
-                        .setRequired(true)
-                        .build();
-
-                Modal rejectModal = Modal.create("reject_reason_modal:" + requestId + ":" + userId, "Причина отклонения заявки")
-                        .addActionRow(rejectReasonInput)
-                        .build();
-
-                event.replyModal(rejectModal).queue();
-            }
-        }, error -> {
-            System.err.println("Ошибка: Не удалось найти пользователя. " + error.getMessage());
-            event.reply("Ошибка: Не удалось найти пользователя.").setEphemeral(true).queue();
-        });
+            }, error -> {
+                System.err.println("Ошибка: Не удалось найти пользователя. " + error.getMessage());
+                event.reply("Ошибка: Не удалось найти пользователя.").setEphemeral(true).queue();
+            });
+        } else if (action.equals("reject_request_button")) {
+            onButtonInteraction(event);
+        }
     }
 }
