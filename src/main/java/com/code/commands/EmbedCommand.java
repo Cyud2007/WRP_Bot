@@ -25,8 +25,8 @@ public class EmbedCommand {
 
     private static final String DATA_FILE = "countrydata.txt";
     private static final AtomicInteger requestCounter = new AtomicInteger(1);
-    private final String targetChannelId = "1273338936177197138"; 
-    private final String roleId = "1274822435597717565"; 
+    private final String targetChannelId = "1273338936177197138";
+    private final String roleId = "1274822435597717565";
 
     private final Map<String, String> requestStates = new ConcurrentHashMap<>();
 
@@ -111,7 +111,7 @@ public class EmbedCommand {
             embed.setFooter("Номер заявки: #" + requestNumber);
 
             String requestId = "request_" + requestNumber;
-            requestStates.put(requestId, "pending"); 
+            requestStates.put(requestId, "pending");
 
             event.getJDA().getTextChannelById(targetChannelId).sendMessageEmbeds(embed.build())
                     .setActionRow(
@@ -153,12 +153,12 @@ public class EmbedCommand {
             }
 
             User user = member.getUser();
-            String nickname = member.getEffectiveName(); 
+            String nickname = member.getEffectiveName();
 
             if (action.equals("accept_request_button")) {
                 String newCountry = parts[3];
 
-             
+
                 if (isUserAlreadyRegistered(guild, user)) {
                     event.reply("Пользователь уже зарегистрирован.").setEphemeral(true).queue();
                     return;
@@ -188,47 +188,47 @@ public class EmbedCommand {
                 dmEmbed.setDescription("Ваша заявка принята!");
                 dmEmbed.setColor(Color.GREEN);
 
-            
+
                 user.openPrivateChannel().queue(channel -> {
                     channel.sendMessageEmbeds(dmEmbed.build()).queue();
                 });
 
-         
+
                 EmbedBuilder channelEmbed = new EmbedBuilder();
                 channelEmbed.setTitle("Игрок принят");
                 channelEmbed.setDescription("Заявка принята! Игрок " + nickname + " успешно принят.");
                 channelEmbed.setColor(Color.BLUE);
 
-         
+
                 guild.getTextChannelById(targetChannelId)
                         .sendMessageEmbeds(channelEmbed.build()).queue();
 
-         
+
                 requestStates.put(requestId, "accepted");
 
             } else if (action.equals("reject_request_button")) {
-          
+
                 EmbedBuilder dmEmbed = new EmbedBuilder();
                 dmEmbed.setTitle("Заявка отклонена");
                 dmEmbed.setDescription("Ваша заявка была отклонена.");
                 dmEmbed.setColor(Color.RED);
 
-    
+
                 user.openPrivateChannel().queue(channel -> {
                     channel.sendMessageEmbeds(dmEmbed.build()).queue();
                 });
 
-     
+
                 EmbedBuilder channelEmbed = new EmbedBuilder();
                 channelEmbed.setTitle("Заявка отклонена");
                 channelEmbed.setDescription("Заявка отклонена. Игрок " + nickname + " не принят.");
                 channelEmbed.setColor(Color.RED);
 
- 
+
                 guild.getTextChannelById(targetChannelId)
                         .sendMessageEmbeds(channelEmbed.build()).queue();
 
-     
+
                 requestStates.put(requestId, "rejected");
             }
         }, error -> {
