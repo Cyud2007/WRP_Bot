@@ -7,34 +7,34 @@ import java.util.stream.Collectors;
 
 public class UserData {
     private final String username;
-    private int balance;
-    private LocalDateTime lastJobTime;  // Добавляем поле для отслеживания последнего использования команды /job
+    private long balance; // Изменен тип с int на long
+    private LocalDateTime lastJobTime; // Поле для отслеживания последнего использования команды /job
     private final Map<String, Integer> inventory;
 
-    public UserData(String username, int balance, String inventoryData) {
+    public UserData(String username, long balance, String inventoryData) { // Изменен тип с int на long
         this.username = username;
         this.balance = balance;
         this.inventory = parseInventory(inventoryData);
-        this.lastJobTime = LocalDateTime.now().minusDays(1); // Инициализируем так, чтобы команда была доступна сразу
+        this.lastJobTime = LocalDateTime.now().minusDays(1); // Инициализация так, чтобы команда была доступна сразу
     }
 
     public String getUsername() {
         return username;
     }
 
-    public int getBalance() {
+    public long getBalance() { // Изменен тип с int на long
         return balance;
     }
 
-    public void setBalance(int balance) {
+    public void setBalance(long balance) { // Изменен тип с int на long
         this.balance = balance;
     }
 
-    public void addToBalance(int amount) {
+    public void addToBalance(long amount) { // Изменен тип с int на long
         this.balance += amount;
     }
 
-    public void subtractFromBalance(int amount) {
+    public void subtractFromBalance(long amount) { // Изменен тип с int на long
         if (this.balance >= amount) {
             this.balance -= amount;
         } else {

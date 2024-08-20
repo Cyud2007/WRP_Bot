@@ -28,7 +28,7 @@ public class GiveMoneyCommand extends Command {
         }
 
         String userName = event.getOption("user").getAsUser().getName();
-        int amount = event.getOption("amount").getAsInt();
+        long amount = event.getOption("amount").getAsLong();
 
         if (amount <= 0) {
             event.reply("Сумма должна быть положительной.").queue();
