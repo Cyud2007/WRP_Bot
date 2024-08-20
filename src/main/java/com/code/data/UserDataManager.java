@@ -25,7 +25,7 @@ public class UserDataManager {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(";");
-                if (parts.length == 4) {  // Теперь ожидаем 4 части
+                if (parts.length == 4) {  // Ожидаем 4 части
                     String username = parts[0];
                     int balance = Integer.parseInt(parts[1]);
                     String inventoryData = parts[2];
@@ -60,6 +60,6 @@ public class UserDataManager {
 
     public static void updateUserData(UserData userData) {
         usersData.put(userData.getUsername(), userData);
-        saveData();
+        saveData();  // Сохраняем данные после обновления
     }
 }

@@ -30,6 +30,18 @@ public class UserData {
         this.balance = balance;
     }
 
+    public void addToBalance(int amount) {
+        this.balance += amount;
+    }
+
+    public void subtractFromBalance(int amount) {
+        if (this.balance >= amount) {
+            this.balance -= amount;
+        } else {
+            throw new IllegalArgumentException("Недостаточно средств.");
+        }
+    }
+
     public LocalDateTime getLastJobTime() {
         return lastJobTime;
     }
@@ -70,10 +82,24 @@ public class UserData {
             String[] parts = item.split(":");
             if (parts.length == 2) {
                 String itemName = parts[0];
-                int quantity = Integer.parseInt(parts[1]);
-                parsedInventory.put(itemName, quantity);
+                try {
+                    int quantity = Integer.parseInt(parts[1]);
+                    parsedInventory.put(itemName, quantity);
+                } catch (NumberFormatException e) {
+                    System.err.println("Ошибка формата количества для товара: " + item);
+                }
             }
         }
         return parsedInventory;
+    }
+
+    @Override
+    public String toString() {
+        return "UserData{" +
+                "username='" + username + '\'' +
+                ", balance=" + balance +
+                ", lastJobTime=" + lastJobTime +
+                ", inventory=" + inventory +
+                '}';
     }
 }

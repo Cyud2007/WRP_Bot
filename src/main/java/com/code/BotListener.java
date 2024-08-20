@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import com.code.commands.BalanceCommand;
 import com.code.commands.BuyCommand;
 import com.code.commands.EmbedCommand;
+import com.code.commands.GiveMoneyCommand;
 import com.code.commands.InfoCommand;
 import com.code.commands.InventoryCommand;
 import com.code.commands.JobCommand;
@@ -36,6 +37,7 @@ public class BotListener extends ListenerAdapter {
     private final BalanceCommand balanceCommand = new BalanceCommand();
     private final JobCommand jobCommand = new JobCommand();
     private final BuyCommand buyCommand = new BuyCommand();
+    private final GiveMoneyCommand giveMoneyCommand = new GiveMoneyCommand();
 
     // Текстовые команды
     private final TestCommand testCommand = new TestCommand();
@@ -83,6 +85,10 @@ public class BotListener extends ListenerAdapter {
             case "buy":
                 buyCommand.execute(event);
                 break;
+                case "givemoney":
+                giveMoneyCommand.execute(event);
+                break;
+                
             default:
                 event.reply("Unknown command").queue();
                 break;
