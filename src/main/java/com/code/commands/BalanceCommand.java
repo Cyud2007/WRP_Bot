@@ -25,15 +25,15 @@ public class BalanceCommand extends Command {
         UserData userData = UserDataManager.getUserData(username);
         int balance = userData.getBalance();
 
-     
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setTitle("Ваш Баланс");
         embedBuilder.setColor(new Color(75, 0, 130));
         embedBuilder.setDescription("Ваш текущий баланс составляет:");
         embedBuilder.addField("Баланс", balance + " монет", false);
 
-
-        // Отправляем Embed сообщение
-        event.replyEmbeds(embedBuilder.build()).queue();
+        // Отправляем Embed сообщение только вызывающему команду пользователю
+        event.replyEmbeds(embedBuilder.build())
+             .setEphemeral(true) // Делаем сообщение видимым только для пользователя
+             .queue();
     }
 }
