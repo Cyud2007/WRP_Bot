@@ -1,2 +1,2 @@
-cyud;30000;Танк:20
-poslaya_sairys;0;
+cyud;24000;
+poslaya_sairys;20000;
