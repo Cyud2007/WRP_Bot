@@ -1,24 +1,30 @@
 package com.code.data;
 
 import java.io.*;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
 public class UserDataManager {
     private static final String DATA_FILE = "data.txt";
     private static final Map<String, UserData> usersData = new HashMap<>();
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    // Метод для загрузки данных
     public static void loadData() {
         try (BufferedReader reader = new BufferedReader(new FileReader(DATA_FILE))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(";");
-                if (parts.length == 3) {
+                if (parts.length == 4) {  // Теперь ожидаем 4 части
                     String username = parts[0];
                     int balance = Integer.parseInt(parts[1]);
                     String inventoryData = parts[2];
-                    usersData.put(username, new UserData(username, balance, inventoryData));
+                    LocalDateTime lastJobTime = LocalDateTime.parse(parts[3], formatter);
+                    UserData userData = new UserData(username, balance, inventoryData);
+                    userData.setLastJobTime(lastJobTime);  // Загружаем время последнего использования команды /job
+                    usersData.put(username, userData);
                 }
             }
         } catch (IOException e) {
@@ -26,11 +32,11 @@ public class UserDataManager {
         }
     }
 
-    // Метод для сохранения данных
     public static void saveData() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(DATA_FILE))) {
             for (UserData data : usersData.values()) {
-                writer.write(data.getUsername() + ";" + data.getBalance() + ";" + data.inventoryToString());
+                writer.write(data.getUsername() + ";" + data.getBalance() + ";" + data.inventoryToString() + ";" +
+                        data.getLastJobTime().format(formatter));  // Сохраняем время последнего использования команды /job
                 writer.newLine();
             }
         } catch (IOException e) {
@@ -38,12 +44,10 @@ public class UserDataManager {
         }
     }
 
-    // Метод для получения данных пользователя
     public static UserData getUserData(String username) {
         return usersData.computeIfAbsent(username, k -> new UserData(username, 0, ""));
     }
-    
-    // Метод для обновления данных пользователя
+
     public static void updateUserData(UserData userData) {
         usersData.put(userData.getUsername(), userData);
         saveData();
