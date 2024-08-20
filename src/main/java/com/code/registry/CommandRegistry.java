@@ -77,6 +77,8 @@ public class CommandRegistry {
                     Class.forName("com.code.commands.BalanceCommand"),
                     Class.forName("com.code.commands.BuyCommand"),
                     Class.forName("com.code.commands.GiveMoneyCommand"),
+                    Class.forName("com.code.commands.RemoveMoneyCommand"),
+                    Class.forName("com.code.commands.WatchBalanceCommand"),
                     //Добавление новых комманд
             };
             for (Class<?> clazz : classes) {

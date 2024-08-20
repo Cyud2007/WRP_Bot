@@ -14,8 +14,10 @@ import com.code.commands.InfoCommand;
 import com.code.commands.InventoryCommand;
 import com.code.commands.JobCommand;
 import com.code.commands.PingCommand;
+import com.code.commands.RemoveMoneyCommand;
 import com.code.commands.ShopCommand;
 import com.code.commands.TestCommand;
+import com.code.commands.WatchBalanceCommand;
 
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -38,6 +40,8 @@ public class BotListener extends ListenerAdapter {
     private final JobCommand jobCommand = new JobCommand();
     private final BuyCommand buyCommand = new BuyCommand();
     private final GiveMoneyCommand giveMoneyCommand = new GiveMoneyCommand();
+    private final RemoveMoneyCommand removeMoneyCommand = new RemoveMoneyCommand();
+    private final WatchBalanceCommand watchBalanceCommand = new WatchBalanceCommand();
 
     // Текстовые команды
     private final TestCommand testCommand = new TestCommand();
@@ -88,7 +92,11 @@ public class BotListener extends ListenerAdapter {
                 case "givemoney":
                 giveMoneyCommand.execute(event);
                 break;
-                
+                case "removemoney":
+                removeMoneyCommand.execute(event);
+                break;    
+                case "w-balance":
+                watchBalanceCommand.execute(event);
             default:
                 event.reply("Unknown command").queue();
                 break;
