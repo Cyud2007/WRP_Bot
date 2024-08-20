@@ -1,11 +1,16 @@
 package com.code.commands;
 
+import java.awt.Color;
+
+import org.jetbrains.annotations.NotNull;
+
 import com.code.shop.ShopItem;
 import com.code.shop.ShopManager;
+
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
-import org.jetbrains.annotations.NotNull;
 
 public class ShopCommand extends Command {
 
@@ -16,10 +21,17 @@ public class ShopCommand extends Command {
 
     @Override
     public void execute(@NotNull SlashCommandInteractionEvent event) {
-        StringBuilder shopItems = new StringBuilder("Доступные товары:\n");
+        EmbedBuilder embedBuilder = new EmbedBuilder();
+        embedBuilder.setTitle("Магазин");
+        embedBuilder.setDescription("Доступные товары для покупки:");
+        embedBuilder.setColor(new Color(75, 0, 130)); 
+
         for (ShopItem item : ShopManager.getItems()) {
-            shopItems.append(item.getName()).append(" - ").append(item.getPrice()).append(" монет\n");
+            embedBuilder.addField(item.getName(), item.getPrice() + " монет", false);
         }
-        event.reply(shopItems.toString()).queue();
+
+        embedBuilder.setFooter("/buy <название> для покупки.", null);
+
+        event.replyEmbeds(embedBuilder.build()).queue();
     }
 }

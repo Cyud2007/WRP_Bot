@@ -23,7 +23,7 @@ public class JobCommand extends Command {
         String username = event.getUser().getName();
         UserData userData = UserDataManager.getUserData(username);
 
-        // Получаем текущее время в часовом поясе Киева
+     
         LocalDateTime now = LocalDateTime.now(ZoneId.of("Europe/Kiev"));
 
         // Проверяем, прошло ли больше 24 часов с последнего использования команды /job

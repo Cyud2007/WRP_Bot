@@ -1,13 +1,18 @@
 package com.code.commands;
 
+import java.awt.Color;
+
+import org.jetbrains.annotations.NotNull;
+
 import com.code.data.UserData;
 import com.code.data.UserDataManager;
 import com.code.shop.ShopItem;
 import com.code.shop.ShopManager;
+
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
-import org.jetbrains.annotations.NotNull;
 
 public class BuyCommand extends Command {
 
@@ -26,7 +31,11 @@ public class BuyCommand extends Command {
 
         ShopItem shopItem = ShopManager.getItemByName(itemName);
         if (shopItem == null) {
-            event.reply("Такого товара нет в магазине.").queue();
+            event.replyEmbeds(new EmbedBuilder()
+                    .setTitle("Ошибка")
+                    .setDescription("Такого товара нет в магазине.")
+                    .setColor(Color.RED)
+                    .build()).queue();
             return;
         }
 
@@ -34,14 +43,27 @@ public class BuyCommand extends Command {
         UserData userData = UserDataManager.getUserData(username);
 
         if (userData.getBalance() < price) {
-            event.reply("У вас недостаточно средств.").queue();
+            event.replyEmbeds(new EmbedBuilder()
+                    .setTitle("Недостаточно средств")
+                    .setDescription("У вас недостаточно средств для покупки.")
+                    .setColor(Color.RED)
+                    .build()).queue();
             return;
         }
 
+      
         userData.setBalance(userData.getBalance() - price);
         userData.addToInventory(shopItem.getName(), quantity);
         UserDataManager.updateUserData(userData);
 
-        event.reply("Вы купили " + quantity + " " + shopItem.getName() + "(ов). Ваш текущий баланс: " + userData.getBalance() + " монет.").queue();
+      
+        EmbedBuilder embedBuilder = new EmbedBuilder();
+        embedBuilder.setTitle("Покупка успешна");
+        embedBuilder.setColor(new Color(75, 0, 130)); // Зеленый цвет для успешного действия
+        embedBuilder.setDescription("Вы купили " + quantity + " " + shopItem.getName() + "(ов).");
+        embedBuilder.addField("Стоимость", price + " монет", false);
+        embedBuilder.addField("Оставшийся баланс", userData.getBalance() + " монет", false);
+
+        event.replyEmbeds(embedBuilder.build()).queue();
     }
 }
