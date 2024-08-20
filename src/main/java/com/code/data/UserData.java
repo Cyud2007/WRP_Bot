@@ -1,5 +1,6 @@
 package com.code.data;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -7,12 +8,14 @@ import java.util.stream.Collectors;
 public class UserData {
     private final String username;
     private int balance;
+    private LocalDateTime lastJobTime;  // Добавляем поле для отслеживания последнего использования команды /job
     private final Map<String, Integer> inventory;
 
     public UserData(String username, int balance, String inventoryData) {
         this.username = username;
         this.balance = balance;
         this.inventory = parseInventory(inventoryData);
+        this.lastJobTime = LocalDateTime.now().minusDays(1); // Инициализируем так, чтобы команда была доступна сразу
     }
 
     public String getUsername() {
@@ -25,6 +28,14 @@ public class UserData {
 
     public void setBalance(int balance) {
         this.balance = balance;
+    }
+
+    public LocalDateTime getLastJobTime() {
+        return lastJobTime;
+    }
+
+    public void setLastJobTime(LocalDateTime lastJobTime) {
+        this.lastJobTime = lastJobTime;
     }
 
     public Map<String, Integer> getInventory() {
@@ -44,14 +55,12 @@ public class UserData {
         }
     }
 
-    // Преобразование инвентаря в строку для хранения
     public String inventoryToString() {
         return inventory.entrySet().stream()
                 .map(entry -> entry.getKey() + ":" + entry.getValue())
                 .collect(Collectors.joining(","));
     }
 
-    // Парсинг строки инвентаря
     private Map<String, Integer> parseInventory(String inventoryData) {
         Map<String, Integer> parsedInventory = new HashMap<>();
         if (inventoryData.isEmpty()) return parsedInventory;

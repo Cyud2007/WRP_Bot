@@ -1,2 +1,1 @@
-cyud;24000;
-poslaya_sairys;20000;
+poslaya_sairys;0;Танк:10;2024-08-20 18:17:23
