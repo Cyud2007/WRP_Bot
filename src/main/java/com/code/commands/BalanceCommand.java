@@ -23,7 +23,7 @@ public class BalanceCommand extends Command {
     public void execute(@NotNull SlashCommandInteractionEvent event) {
         String username = event.getUser().getName();
         UserData userData = UserDataManager.getUserData(username);
-        int balance = userData.getBalance();
+        long balance = userData.getBalance();
 
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setTitle("Ваш Баланс");

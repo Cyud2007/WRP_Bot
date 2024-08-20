@@ -28,7 +28,7 @@ public class RemoveMoneyCommand extends Command {
         }
 
         String userName = event.getOption("user").getAsUser().getName();
-        int amount = event.getOption("amount").getAsInt();
+        long amount = event.getOption("amount").getAsLong();
 
         if (amount <= 0) {
             event.reply("Сумма должна быть положительной.").queue();
@@ -36,19 +36,20 @@ public class RemoveMoneyCommand extends Command {
         }
 
         UserData userData = UserDataManager.getUserData(userName);
-        
-        try {
-            userData.subtractFromBalance(amount);
-            UserDataManager.updateUserData(userData);
 
-            EmbedBuilder embedBuilder = new EmbedBuilder();
-            embedBuilder.setTitle("Деньги отняты!");
-            embedBuilder.setDescription("У пользователя " + userName + " отнято " + amount + " монет.");
-            embedBuilder.setColor(Color.RED);
-
-            event.replyEmbeds(embedBuilder.build()).queue();
-        } catch (IllegalArgumentException e) {
+        if (userData.getBalance() < amount) {
             event.reply("Недостаточно средств у пользователя для выполнения этой операции.").queue();
+            return;
         }
+
+        userData.subtractFromBalance(amount);
+        UserDataManager.updateUserData(userData);
+
+        EmbedBuilder embedBuilder = new EmbedBuilder();
+        embedBuilder.setTitle("Деньги отняты!");
+        embedBuilder.setDescription("У пользователя " + userName + " отнято " + amount + " монет.");
+        embedBuilder.setColor(Color.RED);
+
+        event.replyEmbeds(embedBuilder.build()).queue();
     }
 }
