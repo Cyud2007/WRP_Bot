@@ -31,9 +31,9 @@ public class BalanceCommand extends Command {
         embedBuilder.setDescription("Ваш текущий баланс составляет:");
         embedBuilder.addField("Баланс", balance + " монет", false);
 
-        
+        // Отправляем Embed сообщение только вызывающему команду пользователю
         event.replyEmbeds(embedBuilder.build())
-             .setEphemeral(true) 
+             .setEphemeral(true) // Делаем сообщение видимым только для пользователя
              .queue();
     }
 }

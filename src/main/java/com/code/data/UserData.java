@@ -54,6 +54,25 @@ public class UserData {
         return inventory;
     }
 
+    // Добавляет предмет в инвентарь
+    public void addItemToInventory(String item, int quantity) {
+        inventory.put(item, inventory.getOrDefault(item, 0) + quantity);
+    }
+
+    // Удаляет предмет из инвентаря
+    public boolean removeItemFromInventory(String item, int quantity) {
+        int currentQuantity = inventory.getOrDefault(item, 0);
+        if (currentQuantity >= quantity) {
+            inventory.put(item, currentQuantity - quantity);
+            if (inventory.get(item) == 0) {
+                inventory.remove(item);
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public void addToInventory(String item, int quantity) {
         inventory.put(item, inventory.getOrDefault(item, 0) + quantity);
     }

@@ -6,6 +6,7 @@ import java.util.Properties;
 
 import org.jetbrains.annotations.NotNull;
 
+import com.code.commands.AddItemCommand;
 import com.code.commands.BalanceCommand;
 import com.code.commands.BuyCommand;
 import com.code.commands.EmbedCommand;
@@ -14,6 +15,7 @@ import com.code.commands.InfoCommand;
 import com.code.commands.InventoryCommand;
 import com.code.commands.JobCommand;
 import com.code.commands.PingCommand;
+import com.code.commands.RemoveItemCommand;
 import com.code.commands.RemoveMoneyCommand;
 import com.code.commands.ShopCommand;
 import com.code.commands.TestCommand;
@@ -43,6 +45,8 @@ public class BotListener extends ListenerAdapter {
     private final RemoveMoneyCommand removeMoneyCommand = new RemoveMoneyCommand();
     private final WatchBalanceCommand watchBalanceCommand = new WatchBalanceCommand();
 
+    private final AddItemCommand addItemCommand = new AddItemCommand();
+    private final RemoveItemCommand removeItemCommand = new RemoveItemCommand();
     // Текстовые команды
     private final TestCommand testCommand = new TestCommand();
     private final EmbedCommand embedCommand = new EmbedCommand();
@@ -97,7 +101,14 @@ public class BotListener extends ListenerAdapter {
                 break;    
                 case "w-balance":
                 watchBalanceCommand.execute(event);
-            default:
+                break; 
+                case "additem":
+                addItemCommand.execute(event);
+                break; 
+                case "removeitem":
+                removeItemCommand.execute(event);
+                break; 
+                default:
                 event.reply("Unknown command").queue();
                 break;
         }
