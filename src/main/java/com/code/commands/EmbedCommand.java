@@ -10,6 +10,9 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.code.data.UserData;
+import com.code.data.UserDataManager;
+
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -25,7 +28,7 @@ import net.dv8tion.jda.api.interactions.modals.Modal;
 import net.dv8tion.jda.api.interactions.modals.ModalMapping;
 
 public class EmbedCommand {
-    String probel = " ";
+    
     private static final String DATA_FILE = "countrydata.txt";
     private static final AtomicInteger requestCounter = new AtomicInteger(1);
     private final String targetChannelId = "1273338936177197138";
@@ -142,7 +145,7 @@ public class EmbedCommand {
             // Создаём Embed сообщение
             EmbedBuilder embed = new EmbedBuilder();
             embed.setTitle("Новая заявка на регистрацию");
-            embed.setDescription(String.format("*%s* хочет зарегистрировать страну: *%s * + probel + *%s*", user.getAsTag(), emoji, country ));
+            embed.setDescription(String.format("*%s* хочет зарегистрировать страну: *%s* *%s*", user.getAsTag(), emoji, country ));
             embed.setColor(Color.GREEN);
             embed.setFooter("Номер заявки: #" + requestNumber);
 
@@ -219,7 +222,7 @@ public class EmbedCommand {
         String action = parts[0];
         String requestId = parts[1];
         String userId = parts[2];
-
+    
         String requestState = requestStates.get(requestId);
         if (requestState == null) {
             event.reply("Ошибка: Заявка не найдена.").setEphemeral(true).queue();
@@ -229,36 +232,34 @@ public class EmbedCommand {
             event.reply("Ошибка: Заявка уже обработана.").setEphemeral(true).queue();
             return;
         }
-
+    
         Guild guild = event.getGuild();
         if (guild == null) {
             event.reply("Ошибка: Не удалось найти гильдию.").setEphemeral(true).queue();
             return;
         }
-
-        // Получаем пользователя через кеш или API
+    
         guild.retrieveMemberById(userId).queue(member -> {
             if (member == null) {
                 event.reply("Ошибка: Не удалось найти пользователя.").setEphemeral(true).queue();
                 return;
             }
-
+    
             User user = member.getUser();
             String nickname = member.getEffectiveName();
-
+    
             if (action.equals("accept_request_button")) {
                 String emoji = parts[3];
                 String country = parts[4];
-
+    
                 if (isUserAlreadyRegistered(guild, user)) {
                     event.reply("Пользователь уже зарегистрирован.").setEphemeral(true).queue();
                     return;
                 }
-
-                // Меняем ник пользователя на название страны с емодзи
+    
                 String newNickname = emoji + " " + country;
                 guild.modifyNickname(member, newNickname).queue();
-
+    
                 // Выдаем роль пользователю
                 Role role = guild.getRoleById(roleId);
                 if (role != null) {
@@ -274,37 +275,40 @@ public class EmbedCommand {
                 } else {
                     event.reply("Роль не найдена.").setEphemeral(true).queue();
                 }
-
+    
+                // Создаем данные пользователя и сохраняем их
+                UserData userData = new UserData(newNickname, 0, "");
+                UserDataManager.updateUserData(userData);
+    
                 EmbedBuilder dmEmbed = new EmbedBuilder();
                 dmEmbed.setTitle("Заявка принята");
                 dmEmbed.setDescription("Ваша заявка принята!");
                 dmEmbed.setColor(Color.GREEN);
-
+    
                 user.openPrivateChannel().queue(channel -> {
                     channel.sendMessageEmbeds(dmEmbed.build()).queue();
                 });
-
+    
                 EmbedBuilder channelEmbed = new EmbedBuilder();
                 channelEmbed.setTitle("Игрок принят");
                 channelEmbed.setDescription("Заявка принята! Игрок " + nickname + " успешно принят.");
                 channelEmbed.setColor(Color.BLUE);
-
+    
                 guild.getTextChannelById(targetChannelId)
                         .sendMessageEmbeds(channelEmbed.build()).queue();
-
+    
                 requestStates.put(requestId, "accepted");
-
+    
             } else if (action.equals("reject_request_button")) {
-                // Открываем модальное окно для ввода причины отклонения
                 TextInput rejectReasonInput = TextInput.create("reject_reason_input", "Причина отклонения", TextInputStyle.PARAGRAPH)
                         .setPlaceholder("Например: Не соответствует требованиям...")
                         .setRequired(true)
                         .build();
-
+    
                 Modal rejectModal = Modal.create("reject_reason_modal:" + requestId + ":" + userId, "Причина отклонения заявки")
                         .addActionRow(rejectReasonInput)
                         .build();
-
+    
                 event.replyModal(rejectModal).queue();
             }
         }, error -> {
@@ -312,4 +316,4 @@ public class EmbedCommand {
             event.reply("Ошибка: Не удалось найти пользователя.").setEphemeral(true).queue();
         });
     }
-}
+}    
