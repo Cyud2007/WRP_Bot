@@ -33,6 +33,7 @@ public class EmbedCommand {
     private static final AtomicInteger requestCounter = new AtomicInteger(1);
     private final String targetChannelId = "1273338936177197138";
     private final String roleId = "1274822435597717565";
+    private final String economyRoleId = "1277288067589341184"; 
 
     private final Map<String, String> requestStates = new ConcurrentHashMap<>();
 
@@ -275,6 +276,23 @@ public class EmbedCommand {
                 } else {
                     event.reply("Роль не найдена.").setEphemeral(true).queue();
                 }
+                
+            
+                Role economyRole = guild.getRoleById(economyRoleId);
+                if (economyRole != null) {
+                    guild.addRoleToMember(member, economyRole).queue(
+                            success -> {
+                                event.reply("Вторая роль успешно выдана!").setEphemeral(true).queue();
+                            },
+                            error -> {
+                                System.err.println("Не удалось выдать вторую роль пользователю " + user.getId() + ": " + error.getMessage());
+                                event.reply("Не удалось выдать вторую роль пользователю.").setEphemeral(true).queue();
+                            }
+                    );
+                } else {
+                    event.reply("Вторая роль не найдена.").setEphemeral(true).queue();
+                }
+
     
                 // Создаем данные пользователя и сохраняем их
                 UserData userData = new UserData(newNickname, 0, "");

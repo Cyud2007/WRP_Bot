@@ -17,6 +17,7 @@ import com.code.commands.JobCommand;
 import com.code.commands.PingCommand;
 import com.code.commands.RemoveItemCommand;
 import com.code.commands.RemoveMoneyCommand;
+import com.code.commands.RulesCommand;
 import com.code.commands.ShopCommand;
 import com.code.commands.TestCommand;
 import com.code.commands.WatchBalanceCommand;
@@ -50,6 +51,7 @@ public class BotListener extends ListenerAdapter {
     // Текстовые команды
     private final TestCommand testCommand = new TestCommand();
     private final EmbedCommand embedCommand = new EmbedCommand();
+    private final RulesCommand rulesCommand = new RulesCommand();
 
     private final String prefix;
     private final String roleId; 
@@ -93,19 +95,19 @@ public class BotListener extends ListenerAdapter {
             case "buy":
                 buyCommand.execute(event);
                 break;
-                case "givemoney":
+            case "givemoney":
                 giveMoneyCommand.execute(event);
                 break;
-                case "removemoney":
+            case "removemoney":
                 removeMoneyCommand.execute(event);
                 break;    
-                case "w-balance":
+            case "w-balance":
                 watchBalanceCommand.execute(event);
                 break; 
-                case "additem":
+            case "additem":
                 addItemCommand.execute(event);
                 break; 
-                case "removeitem":
+            case "removeitem":
                 removeItemCommand.execute(event);
                 break; 
                 default:
@@ -140,6 +142,9 @@ public class BotListener extends ListenerAdapter {
                     break;
                 case "buy":
                     buyCommand.execute(event);
+                    break;
+                    case "rules":
+                    rulesCommand.execute(event);
                     break;
                 default:
                     event.getChannel().sendMessage("Unknown command").queue();

@@ -33,6 +33,6 @@ jar {
 
 shadowJar {
     archiveBaseName.set('Discord_WRP')
-    archiveVersion.set('0.3.2')
+    archiveVersion.set('0.4.2')
     archiveClassifier.set('all')
 }
