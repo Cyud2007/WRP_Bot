@@ -4,22 +4,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+import com.code.commands.*;
 import org.jetbrains.annotations.NotNull;
 
-import com.code.commands.AddItemCommand;
-import com.code.commands.BalanceCommand;
-import com.code.commands.BuyCommand;
-import com.code.commands.EmbedCommand;
-import com.code.commands.GiveMoneyCommand;
-import com.code.commands.InfoCommand;
-import com.code.commands.InventoryCommand;
-import com.code.commands.JobCommand;
-import com.code.commands.PingCommand;
-import com.code.commands.RemoveItemCommand;
-import com.code.commands.RemoveMoneyCommand;
-import com.code.commands.ShopCommand;
-import com.code.commands.TestCommand;
-import com.code.commands.WatchBalanceCommand;
+import com.code.commands.ViewBalanceCommand;
 
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -43,7 +31,7 @@ public class BotListener extends ListenerAdapter {
     private final BuyCommand buyCommand = new BuyCommand();
     private final GiveMoneyCommand giveMoneyCommand = new GiveMoneyCommand();
     private final RemoveMoneyCommand removeMoneyCommand = new RemoveMoneyCommand();
-    private final WatchBalanceCommand watchBalanceCommand = new WatchBalanceCommand();
+    private final ViewBalanceCommand viewBalanceCommand = new ViewBalanceCommand();
 
     private final AddItemCommand addItemCommand = new AddItemCommand();
     private final RemoveItemCommand removeItemCommand = new RemoveItemCommand();
@@ -99,8 +87,8 @@ public class BotListener extends ListenerAdapter {
                 case "removemoney":
                 removeMoneyCommand.execute(event);
                 break;    
-                case "w-balance":
-                watchBalanceCommand.execute(event);
+                case "v-balance":
+                viewBalanceCommand.execute(event);
                 break; 
                 case "additem":
                 addItemCommand.execute(event);
