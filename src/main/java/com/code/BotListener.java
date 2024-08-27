@@ -18,6 +18,7 @@ import com.code.commands.PingCommand;
 import com.code.commands.RemoveItemCommand;
 import com.code.commands.RemoveMoneyCommand;
 import com.code.commands.RulesCommand;
+import com.code.commands.SelectMenuCommand;
 import com.code.commands.ShopCommand;
 import com.code.commands.TestCommand;
 import com.code.commands.ViewBalanceCommand;
@@ -29,6 +30,7 @@ import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
@@ -45,16 +47,17 @@ public class BotListener extends ListenerAdapter {
     private final GiveMoneyCommand giveMoneyCommand = new GiveMoneyCommand();
     private final RemoveMoneyCommand removeMoneyCommand = new RemoveMoneyCommand();
     private final ViewBalanceCommand viewBalanceCommand = new ViewBalanceCommand();
-
     private final AddItemCommand addItemCommand = new AddItemCommand();
     private final RemoveItemCommand removeItemCommand = new RemoveItemCommand();
+    private final SelectMenuCommand selectMenuCommand = new SelectMenuCommand(); // Новый объект команды
+
     // Текстовые команды
     private final TestCommand testCommand = new TestCommand();
     private final EmbedCommand embedCommand = new EmbedCommand();
     private final RulesCommand rulesCommand = new RulesCommand();
 
     private final String prefix;
-    private final String roleId; 
+    private final String roleId;
 
     public BotListener() {
         Properties properties = new Properties();
@@ -62,7 +65,7 @@ public class BotListener extends ListenerAdapter {
             if (input != null) {
                 properties.load(input);
                 this.prefix = properties.getProperty("prefix", "!");
-                this.roleId = properties.getProperty("role_id", "1273011992298258544"); 
+                this.roleId = properties.getProperty("role_id", "1273011992298258544");
             } else {
                 throw new RuntimeException("bot.properties not found in classpath");
             }
@@ -100,17 +103,20 @@ public class BotListener extends ListenerAdapter {
                 break;
             case "removemoney":
                 removeMoneyCommand.execute(event);
-                break;    
-                case "v-balance":
+                break;
+            case "v-balance":
                 viewBalanceCommand.execute(event);
-                break; 
+                break;
             case "additem":
                 addItemCommand.execute(event);
-                break; 
+                break;
             case "removeitem":
                 removeItemCommand.execute(event);
-                break; 
-                default:
+                break;
+            case "testmenu": // Добавляем обработку новой команды
+                selectMenuCommand.execute(event);
+                break;
+            default:
                 event.reply("Unknown command").queue();
                 break;
         }
@@ -143,7 +149,7 @@ public class BotListener extends ListenerAdapter {
                 case "buy":
                     buyCommand.execute(event);
                     break;
-                    case "rules":
+                case "rules":
                     rulesCommand.execute(event);
                     break;
                 default:
@@ -160,9 +166,9 @@ public class BotListener extends ListenerAdapter {
 
         // Проверка для кнопок EmbedCommand
         if (event.getComponentId().startsWith("accept_request_button") || event.getComponentId().startsWith("reject_request_button")) {
-            embedCommand.onButtonInteractionForDecision(event); 
+            embedCommand.onButtonInteractionForDecision(event);
         } else {
-            embedCommand.onButtonInteraction(event); 
+            embedCommand.onButtonInteraction(event);
         }
     }
 
@@ -170,6 +176,17 @@ public class BotListener extends ListenerAdapter {
     public void onModalInteraction(ModalInteractionEvent event) {
         // Обрабатываем модальные окна в EmbedCommand
         embedCommand.onModalInteraction(event);
+    }
+
+    @Override
+    public void onStringSelectInteraction(@NotNull StringSelectInteractionEvent event) {
+        String componentId = event.getComponentId();
+
+        if (componentId.equals("menu:category")) {
+            selectMenuCommand.onStringSelectInteraction(event);
+        } else if (componentId.equals("menu:shop")) { 
+            shopCommand.onStringSelectInteraction(event);
+        }
     }
 
     @Override

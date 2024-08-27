@@ -12,26 +12,24 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
 
-public class ShopCommand extends Command {
+public class SelectMenuCommand extends Command {
 
     @Override
     public CommandData createCommand() {
-        return Commands.slash("shop", "test menu.");
+        return Commands.slash("testmenu", "test menu.");
     }
 
     @Override
     public void execute(@NotNull SlashCommandInteractionEvent event) {
-        StringSelectMenu menu = StringSelectMenu.create("menu:shop")
+        StringSelectMenu menu = StringSelectMenu.create("menu:category")
                 .setPlaceholder("Выберите категорию")
-                .addOption("Армия", "army", Emoji.fromUnicode("🏳️‍🌈"))
-                .addOption("Технологии", "tech", Emoji.fromUnicode("🚄"))
-                .addOption("Экономика", "economy", Emoji.fromUnicode("🏭"))
+                .addOption("Информация о боте", "bot_info", "Узнать информацию о боте", Emoji.fromUnicode("ℹ️"))
                 .build();
 
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setTitle("Выберите категорию");
         embedBuilder.setDescription("Используйте меню ниже, чтобы выбрать категорию.");
-        embedBuilder.setColor(new Color(255, 165, 3)); // Оранжевый цвет
+        embedBuilder.setColor(new Color(255, 165, 0)); // Оранжевый цвет
 
         event.replyEmbeds(embedBuilder.build())
              .addActionRow(menu)
@@ -46,18 +44,11 @@ public class ShopCommand extends Command {
         embedBuilder.setColor(new Color(255, 165, 0)); // Оранжевый цвет
 
         switch (selected) {
-            case "army":
-                embedBuilder.setTitle("Товары в категории Армия");
-                embedBuilder.setDescription("Типо дsdа");
-                break;
-            case "tech":
-                embedBuilder.setTitle("Товары в категории **Технологии**");
-                embedBuilder.setDescription("Типо да");
-                // embedBuilder.addField("Товары", ".", false);
-                break;
-            case "economy":
-                embedBuilder.setTitle("Товары в категории **Экономика**");
-                embedBuilder.addField("Товары", ".", false);
+            case "bot_info":
+                embedBuilder.setTitle("Информация о боте");
+                embedBuilder.setDescription("Этот бот был разработан для работы с сервером WPG.");
+                embedBuilder.addField("Версия", "Beta 0.2 ", false);
+                embedBuilder.addField("Авторы", "Cyud, poslaya_sairys", false);
                 break;
             default:
                 embedBuilder.setTitle("Неизвестная категория");
