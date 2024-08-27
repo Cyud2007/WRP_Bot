@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 
 import com.code.commands.AddItemCommand;
 import com.code.commands.BalanceCommand;
+import com.code.commands.BallCommand;
 import com.code.commands.BuyCommand;
 import com.code.commands.CollectCommand;
 import com.code.commands.EmbedCommand;
@@ -52,6 +53,7 @@ public class BotListener extends ListenerAdapter {
     private final RemoveItemCommand removeItemCommand = new RemoveItemCommand();
     private final SelectMenuCommand selectMenuCommand = new SelectMenuCommand(); 
     private final CollectCommand collectCommand = new CollectCommand();
+    private final BallCommand ballCommand = new BallCommand();
 
     // Текстовые команды
     private final TestCommand testCommand = new TestCommand();
@@ -119,7 +121,10 @@ public class BotListener extends ListenerAdapter {
                 selectMenuCommand.execute(event);
                 break;
             case "collect":
-            collectCommand.execute(event);
+                collectCommand.execute(event);
+                break;
+            case "ball":
+                ballCommand.execute(event);
                 break;
             default:
                 event.reply("Unknown command").queue();

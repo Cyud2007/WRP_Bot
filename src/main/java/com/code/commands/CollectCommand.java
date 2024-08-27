@@ -15,11 +15,17 @@ import net.dv8tion.jda.api.interactions.commands.build.Commands;
 
 public class CollectCommand extends Command {
 
-    // Здесь можно задать, сколько монет выдается за каждую роль
+   
     private static final Map<String, Integer> ROLE_REWARDS = Map.of(
         "1277288067589341184", 2000,  
         "1277288432623681547", 50000, 
-        "1277288539360333824", 1000000   
+        "1277288539360333824", 1000000,  
+        "1277288626526621696", 1000000,
+        "1277288691685003435", 1000000,
+        "1277288800359284869", 1000000,
+        "1277288857439572048", 10000
+        
+
     );
 
     @Override
