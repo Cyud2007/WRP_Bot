@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import com.code.commands.AddItemCommand;
 import com.code.commands.BalanceCommand;
 import com.code.commands.BuyCommand;
+import com.code.commands.CollectCommand;
 import com.code.commands.EmbedCommand;
 import com.code.commands.GiveMoneyCommand;
 import com.code.commands.InfoCommand;
@@ -49,7 +50,8 @@ public class BotListener extends ListenerAdapter {
     private final ViewBalanceCommand viewBalanceCommand = new ViewBalanceCommand();
     private final AddItemCommand addItemCommand = new AddItemCommand();
     private final RemoveItemCommand removeItemCommand = new RemoveItemCommand();
-    private final SelectMenuCommand selectMenuCommand = new SelectMenuCommand(); // Новый объект команды
+    private final SelectMenuCommand selectMenuCommand = new SelectMenuCommand(); 
+    private final CollectCommand collectCommand = new CollectCommand();
 
     // Текстовые команды
     private final TestCommand testCommand = new TestCommand();
@@ -113,8 +115,11 @@ public class BotListener extends ListenerAdapter {
             case "removeitem":
                 removeItemCommand.execute(event);
                 break;
-            case "testmenu": // Добавляем обработку новой команды
+            case "testmenu": 
                 selectMenuCommand.execute(event);
+                break;
+            case "collect":
+            collectCommand.execute(event);
                 break;
             default:
                 event.reply("Unknown command").queue();

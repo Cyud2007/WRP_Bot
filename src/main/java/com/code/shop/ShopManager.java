@@ -19,6 +19,7 @@ public class ShopManager {
 
         // Предметы для категории "Экономика"
         items.add(new ShopItem("Экономика лв2", 500, "economy"));
+        
    
     }
 

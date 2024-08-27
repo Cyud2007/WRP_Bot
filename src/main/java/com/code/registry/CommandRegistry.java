@@ -83,6 +83,7 @@ public class CommandRegistry {
                     Class.forName("com.code.commands.AddItemCommand"),
                     Class.forName("com.code.commands.GiveMoneyCommand"),
                     Class.forName("com.code.commands.SelectMenuCommand"),
+                    Class.forName("com.code.commands.CollectCommand"),
                 
                     
                     //Добавление новых комманд
