@@ -48,16 +48,22 @@ public class ShopCommand extends Command {
         switch (selected) {
             case "army":
                 embedBuilder.setTitle("Товары в категории Армия");
-                embedBuilder.setDescription("Типо дsdа");
+                embedBuilder.setDescription("Типо да");
                 break;
             case "tech":
                 embedBuilder.setTitle("Товары в категории **Технологии**");
                 embedBuilder.setDescription("Типо да");
-                // embedBuilder.addField("Товары", ".", false);
                 break;
             case "economy":
                 embedBuilder.setTitle("Товары в категории **Экономика**");
-                embedBuilder.addField("Товары", ".", false);
+                embedBuilder.setDescription("Доступные уровни экономики:\n" +
+                        "- Экономика лв1\n" +
+                        "- Экономика лв2\n" +
+                        "- Экономика лв3\n" +
+                        "- Экономика лв4\n" +
+                        "- Экономика лв5\n" +
+                        "- Экономика лв6\n" +
+                        "- Экономика лв7");
                 break;
             default:
                 embedBuilder.setTitle("Неизвестная категория");
