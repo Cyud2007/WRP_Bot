@@ -39,7 +39,6 @@ public class ShopManager {
 
 
         // Предметы для категории "Экономика"
-        items.add(new ShopItem("Экономика лв1", 100, "economy"));
         items.add(new ShopItem("Экономика лв2", 500, "economy"));
         items.add(new ShopItem("Экономика лв3", 1000, "economy"));
         items.add(new ShopItem("Экономика лв4", 2000, "economy"));

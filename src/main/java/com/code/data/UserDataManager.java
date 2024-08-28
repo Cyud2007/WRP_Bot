@@ -27,7 +27,7 @@ public class UserDataManager {
                 String[] parts = line.split(";");
                 if (parts.length == 4) {  // Ожидаем 4 части
                     String username = parts[0];
-                    int balance = Integer.parseInt(parts[1]);
+                    long balance = Long.parseLong(parts[1]); // Используем long для баланса
                     String inventoryData = parts[2];
                     LocalDateTime lastJobTime = LocalDateTime.parse(parts[3], formatter);
                     UserData userData = new UserData(username, balance, inventoryData);
