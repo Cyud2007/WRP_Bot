@@ -87,7 +87,7 @@ public class CommandRegistry {
                     Class.forName("com.code.commands.BallCommand"),
                 
                     
-                    //Добавление новых комманд
+                
             };
             for (Class<?> clazz : classes) {
                 if (Command.class.isAssignableFrom(clazz)) {

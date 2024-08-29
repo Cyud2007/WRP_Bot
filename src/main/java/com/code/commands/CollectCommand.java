@@ -41,22 +41,21 @@ public class CollectCommand extends Command {
             return;
         }
 
-        // Получаем данные пользователя
+
         UserData userData = UserDataManager.getUserData(member.getId());
         int totalReward = 0;
-
-        // Проверяем наличие ролей и суммируем награды
+        
         for (String roleId : ROLE_REWARDS.keySet()) {
             if (member.getRoles().stream().anyMatch(role -> role.getId().equals(roleId))) {
                 totalReward += ROLE_REWARDS.get(roleId);
             }
         }
 
-        // Обновляем баланс пользователя
+
         userData.setBalance(userData.getBalance() + totalReward);
         UserDataManager.updateUserData(userData);
 
-        // Создаем и отправляем ответное сообщение
+  
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setTitle("Коллект ");
         embedBuilder.setDescription("Вы получили " + totalReward + " монет.");

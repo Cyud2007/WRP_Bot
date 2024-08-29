@@ -34,6 +34,12 @@ public class Main {
             JDA jda = builder.build();
             jda.awaitReady(); // Ожидание полной готовности бота
 
+            if (jda.getStatus() != JDA.Status.CONNECTED) {
+                logger.warn("Bot is not fully connected. Current status: " + jda.getStatus());
+            } else {
+                logger.info("Bot is fully connected and ready.");
+            }
+
             // Регистрация команд
             CommandRegistry.registerCommands(jda);
 
@@ -43,7 +49,9 @@ public class Main {
                 logger.info("Данные успешно сохранены при завершении работы.");
             }));
 
+
             System.out.println("Бот успешно запущен и готов к работе.");
+            logger.info("Bot is running ONREADY.");
 
         } catch (InterruptedException e) {
             logger.error("Ошибка ожидания готовности бота", e);
