@@ -24,6 +24,7 @@ import com.code.commands.SelectMenuCommand;
 import com.code.commands.ShopCommand;
 import com.code.commands.TestCommand;
 import com.code.commands.ViewBalanceCommand;
+import com.code.commands.PayCommand;
 
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -54,6 +55,7 @@ public class BotListener extends ListenerAdapter {
     private final SelectMenuCommand selectMenuCommand = new SelectMenuCommand(); 
     private final CollectCommand collectCommand = new CollectCommand();
     private final BallCommand ballCommand = new BallCommand();
+    private final PayCommand payCommand = new PayCommand();
 
     // Текстовые команды
     private final TestCommand testCommand = new TestCommand();
@@ -101,6 +103,9 @@ public class BotListener extends ListenerAdapter {
                 break;
             case "buy":
                 buyCommand.execute(event);
+                break;
+            case "pay":
+                payCommand.execute(event);
                 break;
             case "givemoney":
                 giveMoneyCommand.execute(event);

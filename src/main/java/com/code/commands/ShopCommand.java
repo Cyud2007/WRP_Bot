@@ -88,7 +88,11 @@ public class ShopCommand extends Command {
                 break;
             case "tech":
                 embedBuilder.setTitle("Товары в категории **Технологии**");
-                embedBuilder.setDescription("Типо да");
+                embedBuilder.setDescription("Доступные Технологии:\n" +
+                        "- Авто завод (Цена: 500 монет)\n" +
+                        "- Танковый завод  (Цена: 1000 монет)\n" +
+                        "- Авиа завод (Цена: 2000 монет)\n" +
+                        "- Верфь  (Цена: 5000 монет)");
                 break;
             case "economy":
                 embedBuilder.setTitle("Товары в категории **Экономика**");
