@@ -16,6 +16,7 @@ import com.code.commands.GiveMoneyCommand;
 import com.code.commands.InfoCommand;
 import com.code.commands.InventoryCommand;
 import com.code.commands.JobCommand;
+import com.code.commands.MuteCommand;
 import com.code.commands.PingCommand;
 import com.code.commands.RemoveItemCommand;
 import com.code.commands.RemoveMoneyCommand;
@@ -56,6 +57,7 @@ public class BotListener extends ListenerAdapter {
     private final CollectCommand collectCommand = new CollectCommand();
     private final BallCommand ballCommand = new BallCommand();
     private final PayCommand payCommand = new PayCommand();
+    private final MuteCommand muteCommand = new MuteCommand();
 
     // Текстовые команды
     private final TestCommand testCommand = new TestCommand();
@@ -131,6 +133,7 @@ public class BotListener extends ListenerAdapter {
             case "ball":
                 ballCommand.execute(event);
                 break;
+            
             default:
                 event.reply("Unknown command").queue();
                 break;
@@ -166,6 +169,9 @@ public class BotListener extends ListenerAdapter {
                     break;
                 case "rules":
                     rulesCommand.execute(event);
+                    break;
+                case "mute":
+                    muteCommand.execute(event);
                     break;
                 default:
                     event.getChannel().sendMessage("Unknown command").queue();

@@ -19,6 +19,9 @@ public class BuyCommand extends Command {
 
     private static final Map<String, Integer> ECONOMY_LEVELS = new HashMap<>();
 
+    // Маппинг для технологий
+    private static final Map<String, String> TECHNOLOGIES = new HashMap<>();
+
     static {
         // Инициализация уровней экономики
         ECONOMY_LEVELS.put("Экономика лв1", 1);
@@ -28,6 +31,12 @@ public class BuyCommand extends Command {
         ECONOMY_LEVELS.put("Экономика лв5", 5);
         ECONOMY_LEVELS.put("Экономика лв6", 6);
         ECONOMY_LEVELS.put("Экономика лв7", 7);
+
+        // Инициализация технологий
+        TECHNOLOGIES.put("Авиа Завод", "1279083348504875133"); // Пример ID роли
+        TECHNOLOGIES.put("Танковый завод", "1279083322911494249"); // Пример ID роли
+        TECHNOLOGIES.put("Верфь", "1279083382160228444"); // Пример ID роли
+        TECHNOLOGIES.put("Авто завод", "1279083382160228444"); // Пример ID роли
     }
 
     @Override
@@ -41,13 +50,13 @@ public class BuyCommand extends Command {
     public void execute(@NotNull SlashCommandInteractionEvent event) {
         String username = event.getUser().getName();
         String itemName = event.getOption("item").getAsString();
-        int quantity = 1; // По умолчанию количество 1
+        int quantity = event.getOption("quantity") != null ? event.getOption("quantity").getAsInt() : 1;
 
-        // Проверяем, если игрок пытается купить экономику, запрещаем ввод количества
-        if (itemName.toLowerCase().startsWith("экономика") && event.getOption("quantity") != null) {
+        // Проверяем, если игрок пытается купить экономику или технологию, запрещаем ввод количества
+        if ((itemName.toLowerCase().startsWith("экономика") || TECHNOLOGIES.containsKey(itemName)) && event.getOption("quantity") != null && quantity != 1) {
             event.replyEmbeds(new EmbedBuilder()
                     .setTitle("Ошибка")
-                    .setDescription("Для этой покупки невозможно указать количество.")
+                    .setDescription("Для этой покупки можно указать количество только 1.")
                     .setColor(Color.RED)
                     .build()).queue();
             return;
@@ -58,11 +67,21 @@ public class BuyCommand extends Command {
             if (!canPurchaseEconomyLevel(event, itemName)) {
                 event.replyEmbeds(new EmbedBuilder()
                         .setTitle("Ошибка")
-                        .setDescription("Вы не можете купить этот уровень экономики, так как у вас уже есть этот или более высокий уровень..")
+                        .setDescription("Вы не можете купить этот уровень экономики, так как у вас уже есть этот или более высокий уровень.")
                         .setColor(Color.RED)
                         .build()).queue();
                 return;
             }
+        }
+
+        // Проверка на возможность покупки технологии
+        if (TECHNOLOGIES.containsKey(itemName) && !canPurchaseTechnology(event, itemName)) {
+            event.replyEmbeds(new EmbedBuilder()
+                    .setTitle("Ошибка")
+                    .setDescription("Вы не можете купить эту технологию, так как она у вас уже есть.")
+                    .setColor(Color.RED)
+                    .build()).queue();
+            return;
         }
 
         ShopItem shopItem = ShopManager.getItemByName(itemName);
@@ -94,6 +113,10 @@ public class BuyCommand extends Command {
         if (itemName.toLowerCase().startsWith("экономика")) {
             removeOldEconomyRoles(event, userData);  // Удаляем предыдущие роли экономики
             assignNewEconomyRole(event, itemName);  // Назначаем новую роль
+        } 
+        // Логика покупки технологии
+        else if (TECHNOLOGIES.containsKey(itemName)) {
+            assignTechnologyRole(event, TECHNOLOGIES.get(itemName));  // Назначаем роль для технологии
         } else {
             userData.addToInventory(shopItem.getName(), quantity);
         }
@@ -125,6 +148,11 @@ public class BuyCommand extends Command {
         return true; // Покупка разрешена
     }
 
+    private boolean canPurchaseTechnology(SlashCommandInteractionEvent event, String itemName) {
+        String roleId = TECHNOLOGIES.get(itemName);
+        return event.getMember().getRoles().stream().noneMatch(role -> role.getId().equals(roleId));
+    }
+
     private void removeOldEconomyRoles(SlashCommandInteractionEvent event, UserData userData) {
         String[] economyRoles = {"Экономика лв1", "Экономика лв2", "Экономика лв3", "Экономика лв4", "Экономика лв5", "Экономика лв6", "Экономика лв7"};
 
@@ -141,5 +169,9 @@ public class BuyCommand extends Command {
         event.getGuild().getRolesByName(itemName, true).forEach(role -> {
             event.getGuild().addRoleToMember(event.getMember(), role).queue();
         });
+    }
+
+    private void assignTechnologyRole(SlashCommandInteractionEvent event, String roleId) {
+        event.getGuild().addRoleToMember(event.getMember(), event.getGuild().getRoleById(roleId)).queue();
     }
 }

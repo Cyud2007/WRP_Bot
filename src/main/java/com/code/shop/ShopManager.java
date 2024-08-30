@@ -35,8 +35,10 @@ public class ShopManager {
 
         // Предметы для категории "Технологии"
 
-        items.add(new ShopItem("Я хз", 800, "tech"));
-
+        items.add(new ShopItem("Авиа Завод", 80000, "tech"));
+        items.add(new ShopItem("Авто завод", 100, "tech"));
+        items.add(new ShopItem("Танковый завод", 1000, "tech"));
+        
 
         // Предметы для категории "Экономика"
         items.add(new ShopItem("Экономика лв2", 500, "economy"));
