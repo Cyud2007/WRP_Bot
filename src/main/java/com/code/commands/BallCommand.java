@@ -30,9 +30,10 @@ public class BallCommand extends Command {
 
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setTitle("Информация о Профиле");
-        embedBuilder.setDescription(" + **Информация** \n Страна:" + username);
+        embedBuilder.setDescription(" **Информация** \n Страна:" + username);
         embedBuilder.setColor(new Color(255, 165, 0)); 
-        embedBuilder.addField("Баланс-ресуры", "Баланс: " + userData.getBalance(),  false);
+        embedBuilder.addField("Баланс", "Баланс: " + userData.getBalance(),  false);
+        embedBuilder.addField("Ресуры: \n ", "Золото: " + userData.getBalance() + "\n Железо: " + userData.getBalance() + "\n Нефть: " + userData.getBalance(),  false);
         embedBuilder.setFooter("WPG Bot", null);
 
 

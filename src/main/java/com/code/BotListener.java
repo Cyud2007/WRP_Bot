@@ -16,7 +16,6 @@ import com.code.commands.GiveMoneyCommand;
 import com.code.commands.InfoCommand;
 import com.code.commands.InventoryCommand;
 import com.code.commands.JobCommand;
-import com.code.commands.MuteCommand;
 import com.code.commands.PingCommand;
 import com.code.commands.RemoveItemCommand;
 import com.code.commands.RemoveMoneyCommand;
@@ -25,6 +24,8 @@ import com.code.commands.SelectMenuCommand;
 import com.code.commands.ShopCommand;
 import com.code.commands.TestCommand;
 import com.code.commands.ViewBalanceCommand;
+import com.code.commands.Admin.MuteCommand;
+import com.code.commands.Admin.KickCommand;
 import com.code.commands.PayCommand;
 
 import net.dv8tion.jda.api.entities.Guild;
@@ -58,6 +59,7 @@ public class BotListener extends ListenerAdapter {
     private final BallCommand ballCommand = new BallCommand();
     private final PayCommand payCommand = new PayCommand();
     private final MuteCommand muteCommand = new MuteCommand();
+    private final KickCommand kickCommand = new KickCommand(); 
 
     // Текстовые команды
     private final TestCommand testCommand = new TestCommand();
@@ -132,6 +134,9 @@ public class BotListener extends ListenerAdapter {
                 break;
             case "ball":
                 ballCommand.execute(event);
+                break;
+            case "kick":  // Добавляем обработку команды kick
+                kickCommand.execute(event);
                 break;
             
             default:

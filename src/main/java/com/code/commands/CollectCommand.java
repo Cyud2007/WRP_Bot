@@ -57,6 +57,7 @@ public class CollectCommand extends Command {
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setTitle("Коллект ");
         embedBuilder.setDescription("Вы получили " + totalReward + " монет.");
+        embedBuilder.addField("Ресуры: \n ", "Золото: "  + "\n Железо: " + "\n Нефть: ",  false);
         embedBuilder.setColor(java.awt.Color.GREEN);
 
         event.replyEmbeds(embedBuilder.build()).queue();

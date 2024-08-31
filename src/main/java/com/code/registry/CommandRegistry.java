@@ -86,7 +86,8 @@ public class CommandRegistry {
                     Class.forName("com.code.commands.CollectCommand"),
                     Class.forName("com.code.commands.BallCommand"),
                     Class.forName("com.code.commands.PayCommand"),
-                    Class.forName("com.code.commands.MuteCommand")
+                    Class.forName("com.code.commands.Admin.MuteCommand"),
+                    Class.forName("com.code.commands.Admin.KickCommand")
                 
             };
             for (Class<?> clazz : classes) {

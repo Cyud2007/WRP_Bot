@@ -1,4 +1,4 @@
-package com.code.commands;
+package com.code.commands.Admin;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
@@ -9,6 +9,8 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.jetbrains.annotations.NotNull;
+
+import com.code.commands.Command;
 
 import java.awt.Color;
 import java.util.concurrent.TimeUnit;
