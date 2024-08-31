@@ -18,8 +18,6 @@ import java.util.Map;
 public class BuyCommand extends Command {
 
     private static final Map<String, Integer> ECONOMY_LEVELS = new HashMap<>();
-
-    // Маппинг для технологий
     private static final Map<String, String> TECHNOLOGIES = new HashMap<>();
 
     static {
@@ -33,10 +31,11 @@ public class BuyCommand extends Command {
         ECONOMY_LEVELS.put("Экономика лв7", 7);
 
         // Инициализация технологий
-        TECHNOLOGIES.put("Авиа Завод", "1279083348504875133"); // Пример ID роли
-        TECHNOLOGIES.put("Танковый завод", "1279083322911494249"); // Пример ID роли
-        TECHNOLOGIES.put("Верфь", "1279083382160228444"); // Пример ID роли
-        TECHNOLOGIES.put("Авто завод", "1279083382160228444"); // Пример ID роли
+        TECHNOLOGIES.put("Авиа Завод", "1279083348504875133"); // ID роли
+        TECHNOLOGIES.put("Танковый завод", "1279083322911494249"); // ID роли
+        TECHNOLOGIES.put("Верфь", "1279083382160228444"); // ID роли
+        TECHNOLOGIES.put("Авто завод", "1279083382160228444"); // ID роли
+        TECHNOLOGIES.put("Ядерный комплекс", "1279092087027011595"); // ID роли
     }
 
     @Override
@@ -53,13 +52,15 @@ public class BuyCommand extends Command {
         int quantity = event.getOption("quantity") != null ? event.getOption("quantity").getAsInt() : 1;
 
         // Проверяем, если игрок пытается купить экономику или технологию, запрещаем ввод количества
-        if ((itemName.toLowerCase().startsWith("экономика") || TECHNOLOGIES.containsKey(itemName)) && event.getOption("quantity") != null && quantity != 1) {
-            event.replyEmbeds(new EmbedBuilder()
-                    .setTitle("Ошибка")
-                    .setDescription("Для этой покупки можно указать количество только 1.")
-                    .setColor(Color.RED)
-                    .build()).queue();
-            return;
+        if ((itemName.toLowerCase().startsWith("экономика") || TECHNOLOGIES.containsKey(itemName))) {
+            if (event.getOption("quantity") != null && quantity != 1) {
+                event.replyEmbeds(new EmbedBuilder()
+                        .setTitle("Ошибка")
+                        .setDescription("Для этой покупки невозможно указать количество.")
+                        .setColor(Color.RED)
+                        .build()).queue();
+                return;
+            }
         }
 
         // Проверка на возможность покупки предыдущих уровней экономики
@@ -113,7 +114,7 @@ public class BuyCommand extends Command {
         if (itemName.toLowerCase().startsWith("экономика")) {
             removeOldEconomyRoles(event, userData);  // Удаляем предыдущие роли экономики
             assignNewEconomyRole(event, itemName);  // Назначаем новую роль
-        } 
+        }
         // Логика покупки технологии
         else if (TECHNOLOGIES.containsKey(itemName)) {
             assignTechnologyRole(event, TECHNOLOGIES.get(itemName));  // Назначаем роль для технологии
