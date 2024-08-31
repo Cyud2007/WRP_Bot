@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+import com.code.commands.Admin.BanCommand;
 import org.jetbrains.annotations.NotNull;
 
 import com.code.commands.AddItemCommand;
@@ -137,6 +138,9 @@ public class BotListener extends ListenerAdapter {
                 break;
             case "kick":  // Добавляем обработку команды kick
                 kickCommand.execute(event);
+                break;
+            case "ban":  // Обработка команды ban
+                new BanCommand().execute(event);
                 break;
             
             default:

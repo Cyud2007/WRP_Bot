@@ -87,8 +87,8 @@ public class CommandRegistry {
                     Class.forName("com.code.commands.BallCommand"),
                     Class.forName("com.code.commands.PayCommand"),
                     Class.forName("com.code.commands.Admin.MuteCommand"),
-                    Class.forName("com.code.commands.Admin.KickCommand")
-                
+                    Class.forName("com.code.commands.Admin.KickCommand"),
+                    Class.forName("com.code.commands.Admin.BanCommand")
             };
             for (Class<?> clazz : classes) {
                 if (Command.class.isAssignableFrom(clazz)) {
