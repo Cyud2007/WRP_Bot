@@ -21,7 +21,6 @@ import com.code.commands.PingCommand;
 import com.code.commands.RemoveItemCommand;
 import com.code.commands.RemoveMoneyCommand;
 import com.code.commands.RulesCommand;
-import com.code.commands.SelectMenuCommand;
 import com.code.commands.ShopCommand;
 import com.code.commands.TestCommand;
 import com.code.commands.ViewBalanceCommand;
@@ -55,7 +54,6 @@ public class BotListener extends ListenerAdapter {
     private final ViewBalanceCommand viewBalanceCommand = new ViewBalanceCommand();
     private final AddItemCommand addItemCommand = new AddItemCommand();
     private final RemoveItemCommand removeItemCommand = new RemoveItemCommand();
-    private final SelectMenuCommand selectMenuCommand = new SelectMenuCommand(); 
     private final CollectCommand collectCommand = new CollectCommand();
     private final BallCommand ballCommand = new BallCommand();
     private final PayCommand payCommand = new PayCommand();
@@ -126,9 +124,6 @@ public class BotListener extends ListenerAdapter {
                 break;
             case "removeitem":
                 removeItemCommand.execute(event);
-                break;
-            case "testmenu": 
-                selectMenuCommand.execute(event);
                 break;
             case "collect":
                 collectCommand.execute(event);
@@ -213,7 +208,6 @@ public class BotListener extends ListenerAdapter {
         String componentId = event.getComponentId();
 
         if (componentId.equals("menu:category")) {
-            selectMenuCommand.onStringSelectInteraction(event);
         } else if (componentId.equals("menu:shop")) { 
             shopCommand.onStringSelectInteraction(event);
         }
