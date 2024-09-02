@@ -8,13 +8,15 @@ import java.util.stream.Collectors;
 public class UserData {
     private final String username;
     private long balance;
-    private LocalDateTime lastJobTime;
+    private LocalDateTime lastJobTime;  // Время последнего использования команды
     private final Map<String, Integer> inventory;
 
     // Новые поля для ресурсов
     private int gold;
     private int iron;
     private int oil;
+
+    public static final int COOLDOWN_HOURS = 18;  // Время кулдауна в часах
 
     public UserData(String username, long balance, String inventoryData) {
         this.username = username;
@@ -167,5 +169,14 @@ public class UserData {
                 ", iron=" + iron +
                 ", oil=" + oil +
                 '}';
+    }
+
+    public boolean canCollect() {
+        LocalDateTime now = LocalDateTime.now();
+        return lastJobTime.isBefore(now.minusHours(COOLDOWN_HOURS));
+    }
+
+    public void updateLastJobTime() {
+        this.lastJobTime = LocalDateTime.now();
     }
 }

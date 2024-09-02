@@ -1,18 +1,17 @@
 package com.code.commands;
 
-
-import java.util.Map;
-
-import org.jetbrains.annotations.NotNull;
-
 import com.code.data.UserData;
 import com.code.data.UserDataManager;
-
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import org.jetbrains.annotations.NotNull;
+
+import java.awt.Color;
+import java.time.LocalDateTime;
+import java.util.Map;
 
 public class CollectCommand extends Command {
 
@@ -27,7 +26,7 @@ public class CollectCommand extends Command {
     );
 
     private static final Map<String, Double> ECONOMY_MULTIPLIERS = Map.of(
-            "1277288691685003435", 1.8,  // Экономика лв5 Дает x1 если у тебя есть Экономика этого уровня)
+            "1277288691685003435", 1.8,  // Экономика лв5
             "1277288800359284869", 2.0,  // Экономика лв6
             "1277288857439572048", 2.2   // Экономика лв7
     );
@@ -45,11 +44,20 @@ public class CollectCommand extends Command {
     public void execute(@NotNull SlashCommandInteractionEvent event) {
         Member member = event.getMember();
         if (member == null) {
-            event.reply("Ошибка: не удалось найти роль или участника. Обратитесь в администрацию").setEphemeral(true).queue();
+            sendErrorEmbed(event, "Ошибка: не удалось найти участника. Обратитесь в администрацию.");
             return;
         }
 
         UserData userData = UserDataManager.getUserData(member.getId());
+
+        // Проверка кулдауна
+        if (!userData.canCollect()) {
+            LocalDateTime nextAllowedTime = userData.getLastJobTime().plusHours(UserData.COOLDOWN_HOURS);
+            long hoursLeft = java.time.Duration.between(LocalDateTime.now(), nextAllowedTime).toHours();
+            sendErrorEmbed(event, "Пожалуйста, подождите " + hoursLeft + " часов перед следующим сбором.");
+            return;
+        }
+
         int totalReward = 0;
         double multiplier = 1.0;
 
@@ -67,7 +75,6 @@ public class CollectCommand extends Command {
         int goldReward = (int) (BASE_GOLD_REWARD * multiplier);
         userData.addGold(goldReward);
 
-  
         int ironReward = 0;
         if (member.getRoles().stream().anyMatch(role -> role.getId().equals(MINER_ROLE_ID))) {
             ironReward = (int) (BASE_IRON_REWARD * multiplier);
@@ -75,12 +82,14 @@ public class CollectCommand extends Command {
         }
 
         UserDataManager.updateUserData(userData);
+        userData.updateLastJobTime();  // Обновляем время последнего использования команды
 
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setTitle("Ресурсы собраны");
         embedBuilder.setDescription("Вы получили " + totalReward + " монет.");
+        embedBuilder.setColor(Color.GREEN);
 
-        //Тут типо пишет есть ли у тебя x2 
+        // Формируем описание ресурсов
         StringBuilder resourcesDescription = new StringBuilder();
         resourcesDescription.append("Золото: ").append(userData.getGold());
         if (multiplier > 1.0) {
@@ -93,8 +102,16 @@ public class CollectCommand extends Command {
         resourcesDescription.append("\nНефть: ").append(userData.getOil());
 
         embedBuilder.addField("Ресурсы:", resourcesDescription.toString(), false);
-        embedBuilder.setColor(java.awt.Color.GREEN);
 
         event.replyEmbeds(embedBuilder.build()).queue();
+    }
+
+    private void sendErrorEmbed(@NotNull SlashCommandInteractionEvent event, String message) {
+        EmbedBuilder embedBuilder = new EmbedBuilder();
+        embedBuilder.setTitle("Ошибка");
+        embedBuilder.setDescription(message);
+        embedBuilder.setColor(Color.RED);
+
+        event.replyEmbeds(embedBuilder.build()).setEphemeral(false).queue();
     }
 }
