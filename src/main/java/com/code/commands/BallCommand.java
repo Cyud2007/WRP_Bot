@@ -33,7 +33,7 @@ public class BallCommand extends Command {
         embedBuilder.setDescription(" **Информация** \n Страна:" + username);
         embedBuilder.setColor(new Color(255, 165, 0)); 
         embedBuilder.addField("Баланс", "Баланс: " + userData.getBalance(),  false);
-        embedBuilder.addField("Ресуры: \n ", "Золото: " + userData.getBalance() + "\n Железо: " + userData.getBalance() + "\n Нефть: " + userData.getBalance(),  false);
+        embedBuilder.addField("Ресуры: \n ", "Золото: " + userData.getGold() + "\n Железо: " + userData.getIron() + "\n Нефть: " + userData.getOil(),  false);
         embedBuilder.setFooter("WPG Bot", null);
 
 

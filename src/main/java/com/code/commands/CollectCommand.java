@@ -32,8 +32,11 @@ public class CollectCommand extends Command {
     );
 
     private static final String MINER_ROLE_ID = "1279083348504875133";
+    private static final String SHIPYARD_ROLE_ID = "1279083382160228444";  // ID Верфи
+
     private static final int BASE_IRON_REWARD = 10000;
-    private static final int BASE_GOLD_REWARD = 5000;
+    private static final int BASE_GOLD_REWARD = 5000;  // Базовая награда за золото
+    private static final int BASE_OIL_REWARD = 600;   // Базовая награда за нефть
 
     @Override
     public CommandData createCommand() {
@@ -69,16 +72,25 @@ public class CollectCommand extends Command {
             }
         }
 
-        // Начисляем монеты и золото
+        // Начисляем монеты
         userData.addToBalance(totalReward);
 
+        // Начисляем золото
         int goldReward = (int) (BASE_GOLD_REWARD * multiplier);
         userData.addGold(goldReward);
 
+        // Начисляем железо
         int ironReward = 0;
         if (member.getRoles().stream().anyMatch(role -> role.getId().equals(MINER_ROLE_ID))) {
             ironReward = (int) (BASE_IRON_REWARD * multiplier);
             userData.addIron(ironReward);
+        }
+
+        // Начисляем нефть
+        int oilReward = 0;
+        if (member.getRoles().stream().anyMatch(role -> role.getId().equals(SHIPYARD_ROLE_ID))) {
+            oilReward = (int) (BASE_OIL_REWARD * multiplier);
+            userData.addOil(oilReward);
         }
 
         UserDataManager.updateUserData(userData);
@@ -100,6 +112,9 @@ public class CollectCommand extends Command {
             resourcesDescription.append(" (x").append(multiplier).append(")");
         }
         resourcesDescription.append("\nНефть: ").append(userData.getOil());
+        if (oilReward > 0) {
+            resourcesDescription.append(" (x").append(multiplier).append(")");
+        }
 
         embedBuilder.addField("Ресурсы:", resourcesDescription.toString(), false);
 
