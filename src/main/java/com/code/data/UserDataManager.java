@@ -25,13 +25,21 @@ public class UserDataManager {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(";");
-                if (parts.length == 4) {  // Ожидаем 4 части
+                if (parts.length == 7) {  // Ожидаем 7 частей данных
                     String username = parts[0];
-                    long balance = Long.parseLong(parts[1]); // Используем long для баланса
+                    long balance = Long.parseLong(parts[1]);
                     String inventoryData = parts[2];
-                    LocalDateTime lastJobTime = LocalDateTime.parse(parts[3], formatter);
+                    int gold = Integer.parseInt(parts[3]);
+                    int iron = Integer.parseInt(parts[4]);
+                    int oil = Integer.parseInt(parts[5]);
+                    LocalDateTime lastJobTime = LocalDateTime.parse(parts[6], formatter);
+
                     UserData userData = new UserData(username, balance, inventoryData);
-                    userData.setLastJobTime(lastJobTime);  // Загружаем время последнего использования команды /job
+                    userData.setGold(gold);
+                    userData.setIron(iron);
+                    userData.setOil(oil);
+                    userData.setLastJobTime(lastJobTime);
+
                     usersData.put(username, userData);
                 }
             }
@@ -45,7 +53,8 @@ public class UserDataManager {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(DATA_FILE))) {
             for (UserData data : usersData.values()) {
                 writer.write(data.getUsername() + ";" + data.getBalance() + ";" + data.inventoryToString() + ";" +
-                        data.getLastJobTime().format(formatter));  // Сохраняем время последнего использования команды /job
+                        data.getGold() + ";" + data.getIron() + ";" + data.getOil() + ";" +
+                        data.getLastJobTime().format(formatter));
                 writer.newLine();
             }
             System.out.println("Data saved successfully.");
