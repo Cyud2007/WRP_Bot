@@ -15,11 +15,11 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 
-public class JobCommand extends Command {
+public class WorkCommand extends Command {
 
     @Override
     public CommandData createCommand() {
-        return Commands.slash("job", "Выдает 2000 монет раз в сутки.");
+        return Commands.slash("work", "Выдает 2000 монет раз в сутки.");
     }
 
     @Override

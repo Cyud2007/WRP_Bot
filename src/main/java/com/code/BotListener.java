@@ -16,7 +16,7 @@ import com.code.commands.EmbedCommand;
 import com.code.commands.GiveMoneyCommand;
 import com.code.commands.InfoCommand;
 import com.code.commands.InventoryCommand;
-import com.code.commands.JobCommand;
+import com.code.commands.WorkCommand;
 import com.code.commands.PingCommand;
 import com.code.commands.RemoveItemCommand;
 import com.code.commands.RemoveMoneyCommand;
@@ -47,7 +47,7 @@ public class BotListener extends ListenerAdapter {
     private final ShopCommand shopCommand = new ShopCommand();
     private final InventoryCommand inventoryCommand = new InventoryCommand();
     private final BalanceCommand balanceCommand = new BalanceCommand();
-    private final JobCommand jobCommand = new JobCommand();
+    private final WorkCommand workCommand = new WorkCommand();
     private final BuyCommand buyCommand = new BuyCommand();
     private final GiveMoneyCommand giveMoneyCommand = new GiveMoneyCommand();
     private final RemoveMoneyCommand removeMoneyCommand = new RemoveMoneyCommand();
@@ -101,8 +101,8 @@ public class BotListener extends ListenerAdapter {
             case "balance":
                 balanceCommand.execute(event);
                 break;
-            case "job":
-                jobCommand.execute(event);
+            case "work":
+                workCommand.execute(event);
                 break;
             case "buy":
                 buyCommand.execute(event);
@@ -165,8 +165,8 @@ public class BotListener extends ListenerAdapter {
                 case "balance":
                     balanceCommand.execute(event);
                     break;
-                case "job":
-                    jobCommand.execute(event);
+                case "work":
+                    workCommand.execute(event);
                     break;
                 case "buy":
                     buyCommand.execute(event);
