@@ -12,16 +12,24 @@ public class Config {
 
     static {
         try (InputStream input = Config.class.getClassLoader().getResourceAsStream("bot.properties")) {
-            if (input == null) {
-                throw new IllegalStateException("Не удалось найти конфигурационный файл.");
+            if (input != null) {
+                properties.load(input);
+            } else {
+                logger.warn("bot.properties не найден, используются переменные окружения.");
             }
-            properties.load(input);
         } catch (Exception e) {
-            logger.error("Ошибка при загрузке конфигурационного файла.", e);
+            logger.error("Ошибка при загрузке bot.properties.", e);
         }
     }
 
     public static String getBotToken() {
+        // Попытка получить токен из переменной окружения
+        String envToken = System.getenv("BOT_TOKEN");
+        if (envToken != null && !envToken.isEmpty()) {
+            return envToken;
+        }
+
+        // Альтернатива: из файла bot.properties
         return properties.getProperty("bot.token");
     }
 
