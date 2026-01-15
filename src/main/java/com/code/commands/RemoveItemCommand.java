@@ -14,25 +14,25 @@ public class RemoveItemCommand extends Command {
 
     @Override
     public CommandData createCommand() {
-        return Commands.slash("removeitem", "Удаляет предмет из инвентаря пользователя.")
-                .addOption(OptionType.STRING, "ник", "Никнейм пользователя", true)
-                .addOption(OptionType.STRING, "предмет", "Название предмета", true)
-                .addOption(OptionType.INTEGER, "количество", "Количество предметов", true);
+        return Commands.slash("removeitem", "Removes an item from the user's inventory.")
+                .addOption(OptionType.STRING, "nickname", "User nickname", true)
+                .addOption(OptionType.STRING, "item", "Item name", true)
+                .addOption(OptionType.INTEGER, "quantity", "Number of items", true);
     }
 
     @Override
     public void execute(@NotNull SlashCommandInteractionEvent event) {
-        String username = event.getOption("ник").getAsString();
-        String item = event.getOption("предмет").getAsString();
-        int amount = event.getOption("количество").getAsInt();
+        String username = event.getOption("nickname").getAsString();
+        String item = event.getOption("item").getAsString();
+        int amount = event.getOption("quantity").getAsInt();
 
         UserData userData = UserDataManager.getUserData(username);
         boolean success = userData.removeItemFromInventory(item, amount);
 
         if (success) {
-            event.reply("Удалено " + amount + " шт. " + item + " из инвентаря " + username + ".").queue();
+            event.reply("Removed " + amount + " pcs. " + item + " from inventory " + username + ".").queue();
         } else {
-            event.reply("Не удалось удалить " + amount + " шт. " + item + " из инвентаря " + username + ". Возможно, недостаточно предметов.").queue();
+            event.reply("Failed to remove " + amount + " items " + item + " from inventory " + username + ". There may not be enough items.").queue();
         }
     }
 }
