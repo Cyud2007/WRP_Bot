@@ -19,7 +19,7 @@ public class WorkCommand extends Command {
 
     @Override
     public CommandData createCommand() {
-        return Commands.slash("work", "Выдает 2000 монет раз в сутки.");
+        return Commands.slash("work", "Gives out 2000 coins once a day.");
     }
 
     @Override
@@ -36,17 +36,17 @@ public class WorkCommand extends Command {
 
             EmbedBuilder embed = new EmbedBuilder();
             embed.setColor(Color.GREEN);
-            embed.setTitle("💰 Заработок успешен!");
-            embed.setDescription("Вы заработали 2000 монет.");
-            embed.addField("Ваш текущий баланс", userData.getBalance() + " монет", false);
+            embed.setTitle("💰 Earnings are successful!");
+            embed.setDescription("You have earned 2000 coins.");
+            embed.addField("Your current balance", userData.getBalance() + " coins", false);
             embed.setTimestamp(now);
 
             event.replyEmbeds(embed.build()).queue();
         } else {
             EmbedBuilder embed = new EmbedBuilder();
             embed.setColor(Color.RED);
-            embed.setTitle("⏳ Подождите немного!");
-            embed.setDescription("Вы уже использовали эту команду сегодня. Попробуйте снова после полуночи.");
+            embed.setTitle("⏳ Wait a bit!");
+            embed.setDescription("You've already used this command today. Try again after midnight..");
             embed.setTimestamp(now);
 
             event.replyEmbeds(embed.build()).queue();
