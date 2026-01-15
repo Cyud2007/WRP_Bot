@@ -21,28 +21,28 @@ public class BuyCommand extends Command {
     private static final Map<String, String> TECHNOLOGIES = new HashMap<>();
 
     static {
-        // Инициализация уровней экономики
-        ECONOMY_LEVELS.put("Экономика лв1", 1);
-        ECONOMY_LEVELS.put("Экономика лв2", 2);
-        ECONOMY_LEVELS.put("Экономика лв3", 3);
-        ECONOMY_LEVELS.put("Экономика лв4", 4);
-        ECONOMY_LEVELS.put("Экономика лв5", 5);
-        ECONOMY_LEVELS.put("Экономика лв6", 6);
-        ECONOMY_LEVELS.put("Экономика лв7", 7);
+        // Initialization of economic levels
+        ECONOMY_LEVELS.put("Economy lv1", 1);
+        ECONOMY_LEVELS.put("Economy lv2", 2);
+        ECONOMY_LEVELS.put("Economy lv3", 3);
+        ECONOMY_LEVELS.put("Economy lv4", 4);
+        ECONOMY_LEVELS.put("Economy lv5", 5);
+        ECONOMY_LEVELS.put("Economy lv6", 6);
+        ECONOMY_LEVELS.put("Economy lv7", 7);
 
-        // Инициализация технологий
-        TECHNOLOGIES.put("Авиа Завод", "1279083348504875133"); // ID роли
-        TECHNOLOGIES.put("Танковый завод", "1279083322911494249"); // ID роли
-        TECHNOLOGIES.put("Верфь", "1279083382160228444"); // ID роли
-        TECHNOLOGIES.put("Авто завод", "1279083382160228444"); // ID роли
-        TECHNOLOGIES.put("Ядерный комплекс", "1279092087027011595"); // ID роли
+        // Initialization of technologies
+        TECHNOLOGIES.put("Aircraft plant", "1279083348504875133"); // ID роли
+        TECHNOLOGIES.put("Tank factory", "1279083322911494249"); // ID роли
+        TECHNOLOGIES.put("Shipyard", "1279083382160228444"); // ID роли
+        TECHNOLOGIES.put("Car plant", "1279083382160228444"); // ID роли
+        TECHNOLOGIES.put("Nuclear complex", "1279092087027011595"); // ID роли
     }
 
     @Override
     public CommandData createCommand() {
-        return Commands.slash("buy", "Купить товар в магазине.")
-                .addOption(net.dv8tion.jda.api.interactions.commands.OptionType.STRING, "item", "Название товара", true)
-                .addOption(net.dv8tion.jda.api.interactions.commands.OptionType.INTEGER, "quantity", "Количество (по умолчанию 1)", false);
+        return Commands.slash("buy", "Buy a product in a store.")
+                .addOption(net.dv8tion.jda.api.interactions.commands.OptionType.STRING, "item", "Product name", true)
+                .addOption(net.dv8tion.jda.api.interactions.commands.OptionType.INTEGER, "quantity", "Quantity (default 1)", false);
     }
 
     @Override
@@ -51,35 +51,35 @@ public class BuyCommand extends Command {
         String itemName = event.getOption("item").getAsString();
         int quantity = event.getOption("quantity") != null ? event.getOption("quantity").getAsInt() : 1;
 
-        // Проверяем, если игрок пытается купить экономику или технологию, запрещаем ввод количества
-        if ((itemName.toLowerCase().startsWith("экономика") || TECHNOLOGIES.containsKey(itemName))) {
+        // We check if a player is trying to buy an economy or technology and prohibit the entry of quantities.
+        if ((itemName.toLowerCase().startsWith("economy") || TECHNOLOGIES.containsKey(itemName))) {
             if (event.getOption("quantity") != null && quantity != 1) {
                 event.replyEmbeds(new EmbedBuilder()
-                        .setTitle("Ошибка")
-                        .setDescription("Для этой покупки невозможно указать количество.")
+                        .setTitle("Error")
+                        .setDescription("It is not possible to specify a quantity for this purchase..")
                         .setColor(Color.RED)
                         .build()).queue();
                 return;
             }
         }
 
-        // Проверка на возможность покупки предыдущих уровней экономики
+        // Testing the feasibility of purchasing previous levels of the economy
         if (itemName.toLowerCase().startsWith("экономика")) {
             if (!canPurchaseEconomyLevel(event, itemName)) {
                 event.replyEmbeds(new EmbedBuilder()
-                        .setTitle("Ошибка")
-                        .setDescription("Вы не можете купить этот уровень экономики, так как у вас уже есть этот или более высокий уровень.")
+                        .setTitle("Error")
+                        .setDescription("You cannot buy this level of economy because you already have this level or a higher one..")
                         .setColor(Color.RED)
                         .build()).queue();
                 return;
             }
         }
 
-        // Проверка на возможность покупки технологии
+        // Checking the feasibility of purchasing technology
         if (TECHNOLOGIES.containsKey(itemName) && !canPurchaseTechnology(event, itemName)) {
             event.replyEmbeds(new EmbedBuilder()
-                    .setTitle("Ошибка")
-                    .setDescription("Вы не можете купить эту технологию, так как она у вас уже есть.")
+                    .setTitle("Error")
+                    .setDescription("You can't buy this technology because you already have it..")
                     .setColor(Color.RED)
                     .build()).queue();
             return;
@@ -88,8 +88,8 @@ public class BuyCommand extends Command {
         ShopItem shopItem = ShopManager.getItemByName(itemName);
         if (shopItem == null) {
             event.replyEmbeds(new EmbedBuilder()
-                    .setTitle("Ошибка")
-                    .setDescription("Такого товара нет в магазине.")
+                    .setTitle("Error")
+                    .setDescription("This product is not available in the store.")
                     .setColor(Color.RED)
                     .build()).queue();
             return;
@@ -100,24 +100,24 @@ public class BuyCommand extends Command {
 
         if (userData.getBalance() < totalPrice) {
             event.replyEmbeds(new EmbedBuilder()
-                    .setTitle("Недостаточно средств")
-                    .setDescription("У вас недостаточно средств для покупки.")
+                    .setTitle("Insufficient funds")
+                    .setDescription("You do not have sufficient funds to purchase.")
                     .setColor(Color.RED)
                     .build()).queue();
             return;
         }
 
-        // Обновляем баланс игрока
+        // Updating the player's balance
         userData.setBalance(userData.getBalance() - totalPrice);
 
-        // Логика покупки уровня экономики
+        // The logic of buying the level of the economy
         if (itemName.toLowerCase().startsWith("экономика")) {
-            removeOldEconomyRoles(event, userData);  // Удаляем предыдущие роли экономики
-            assignNewEconomyRole(event, itemName);  // Назначаем новую роль
+            removeOldEconomyRoles(event, userData);  // Removing the previous roles of the economy
+            assignNewEconomyRole(event, itemName);  // Assigning a new role
         }
-        // Логика покупки технологии
+        // The logic of purchasing technology
         else if (TECHNOLOGIES.containsKey(itemName)) {
-            assignTechnologyRole(event, TECHNOLOGIES.get(itemName));  // Назначаем роль для технологии
+            assignTechnologyRole(event, TECHNOLOGIES.get(itemName));  // Assigning a role to technology
         } else {
             userData.addToInventory(shopItem.getName(), quantity);
         }
@@ -125,11 +125,11 @@ public class BuyCommand extends Command {
         UserDataManager.updateUserData(userData);
 
         EmbedBuilder embedBuilder = new EmbedBuilder();
-        embedBuilder.setTitle("Покупка успешна");
+        embedBuilder.setTitle("Purchase successful");
         embedBuilder.setColor(new Color(75, 0, 130));
-        embedBuilder.setDescription("Вы купили " + shopItem.getName() + " (x" + quantity + ").");
-        embedBuilder.addField("Стоимость", totalPrice + " монет", false);
-        embedBuilder.addField("Оставшийся баланс", userData.getBalance() + " монет", false);
+        embedBuilder.setDescription("You bought " + shopItem.getName() + " (x" + quantity + ").");
+        embedBuilder.addField("Price", totalPrice + " coins", false);
+        embedBuilder.addField("Remaining balance", userData.getBalance() + " coins", false);
 
         event.replyEmbeds(embedBuilder.build()).queue();
     }
@@ -141,12 +141,12 @@ public class BuyCommand extends Command {
             if (event.getMember().getRoles().stream().anyMatch(role -> role.getName().equals(roleName))) {
                 int existingEconomyLevel = ECONOMY_LEVELS.get(roleName);
                 if (existingEconomyLevel >= newEconomyLevel) {
-                    return false; // Нельзя купить более низкий или такой же уровень
+                    return false; // You cannot buy a lower or the same level
                 }
             }
         }
 
-        return true; // Покупка разрешена
+        return true; // Purchase allowed
     }
 
     private boolean canPurchaseTechnology(SlashCommandInteractionEvent event, String itemName) {
@@ -155,7 +155,7 @@ public class BuyCommand extends Command {
     }
 
     private void removeOldEconomyRoles(SlashCommandInteractionEvent event, UserData userData) {
-        String[] economyRoles = {"Экономика лв1", "Экономика лв2", "Экономика лв3", "Экономика лв4", "Экономика лв5", "Экономика лв6", "Экономика лв7"};
+        String[] economyRoles = {"Economy lv1", "Economy lv2", "Economy lv3", "Economy lv4", "Economy lv5", "Economy lv6", "Economy lv7""};
 
         for (String roleName : economyRoles) {
             event.getGuild().getRolesByName(roleName, true).forEach(role -> {
