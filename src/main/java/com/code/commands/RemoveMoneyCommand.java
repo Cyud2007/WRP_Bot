@@ -14,16 +14,16 @@ public class RemoveMoneyCommand extends Command {
 
     @Override
     public CommandData createCommand() {
-        return Commands.slash("removemoney", "Отнять деньги у пользователя.")
-                .addOption(net.dv8tion.jda.api.interactions.commands.OptionType.USER, "user", "Пользователь, у которого нужно отнять деньги", true)
-                .addOption(net.dv8tion.jda.api.interactions.commands.OptionType.INTEGER, "amount", "Сумма денег для вычета", true);
+        return Commands.slash("removemoney", "Take money from the user.")
+                .addOption(net.dv8tion.jda.api.interactions.commands.OptionType.USER, "user", "The user from whom money needs to be taken", true)
+                .addOption(net.dv8tion.jda.api.interactions.commands.OptionType.INTEGER, "amount", "Amount of money to be deducted", true);
     }
 
     @Override
     public void execute(@NotNull SlashCommandInteractionEvent event) {
-        // Проверка на наличие необходимых прав (например, администратор или модератор)
+        // Checking for the required rights (e.g. administrator or moderator)
         if (!event.getMember().hasPermission(net.dv8tion.jda.api.Permission.MANAGE_SERVER)) {
-            event.reply("У вас нет прав для выполнения этой команды.").queue();
+            event.reply("You do not have permission to execute this command.").queue();
             return;
         }
 
@@ -31,14 +31,14 @@ public class RemoveMoneyCommand extends Command {
         long amount = event.getOption("amount").getAsLong();
 
         if (amount <= 0) {
-            event.reply("Сумма должна быть положительной.").queue();
+            event.reply("The amount must be positive.").queue();
             return;
         }
 
         UserData userData = UserDataManager.getUserData(userName);
 
         if (userData.getBalance() < amount) {
-            event.reply("Недостаточно средств у пользователя для выполнения этой операции.").queue();
+            event.reply("The user does not have sufficient funds to perform this operation.").queue();
             return;
         }
 
@@ -46,8 +46,8 @@ public class RemoveMoneyCommand extends Command {
         UserDataManager.updateUserData(userData);
 
         EmbedBuilder embedBuilder = new EmbedBuilder();
-        embedBuilder.setTitle("Деньги отняты!");
-        embedBuilder.setDescription("У пользователя " + userName + " отнято " + amount + " монет.");
+        embedBuilder.setTitle("The money was taken away!");
+        embedBuilder.setDescription("User " + userName + " has had " + amount + " coins taken away.");
         embedBuilder.setColor(Color.RED);
 
         event.replyEmbeds(embedBuilder.build()).queue();
