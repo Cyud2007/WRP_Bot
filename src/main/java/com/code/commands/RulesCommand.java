@@ -10,8 +10,8 @@ public class RulesCommand {
     public void execute(MessageReceivedEvent event) {
         if (event.getMessage().getContentRaw().equalsIgnoreCase("!rules")) {
             EmbedBuilder embed = new EmbedBuilder();
-            embed.setTitle("ПРАВИЛА");  // This sets the large title text
-            embed.setDescription("**Информа WPG Bot");
+            embed.setTitle("RULES");  // This sets the large title text
+            embed.setDescription("**Informa WPG Bot");
             embed.setColor(Color.BLUE);  // Sets the color of the embed
 
 
