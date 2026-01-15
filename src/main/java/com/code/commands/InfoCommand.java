@@ -13,18 +13,18 @@ public class InfoCommand extends Command {
 
     @Override
     public CommandData createCommand() {
-        return Commands.slash("info", "Отправляет информационное сообщение в формате embed.");
+        return Commands.slash("info", "Sends an informational message in embed format.");
     }
 
     @Override
     public void execute(@NotNull MessageReceivedEvent event) {
 
         EmbedBuilder embedBuilder = new EmbedBuilder();
-        embedBuilder.setTitle("Информация о боте");
-        embedBuilder.setDescription("Этот бот был разработан для работы с сервером WPG.");
-        embedBuilder.setColor(new Color(255, 165, 0)); // Оранжевый цвет
-        embedBuilder.addField("Версия", "Beta 0.2 ", false);
-        embedBuilder.addField("Авторы", "Cyud, poslaya_sairys", false);
+        embedBuilder.setTitle("Information about the bot");
+        embedBuilder.setDescription("This bot was designed to work with a server. WPG.");
+        embedBuilder.setColor(new Color(255, 165, 0)); // Orange
+        embedBuilder.addField("Version", "Beta 1.2 ", false);
+        embedBuilder.addField("Authors", "Cyud, poslaya_sairys", false);
         embedBuilder.setFooter("GWRP Bot", null);
 
         event.getChannel().sendMessageEmbeds(embedBuilder.build()).queue();
@@ -32,11 +32,11 @@ public class InfoCommand extends Command {
     @Override
     public void execute(@NotNull SlashCommandInteractionEvent event) {
         EmbedBuilder embedBuilder = new EmbedBuilder();
-        embedBuilder.setTitle("Информация о боте");
-        embedBuilder.setDescription("Этот бот был разработан для работы с сервером WPG.");
-        embedBuilder.setColor(new Color(255, 165, 0)); // Оранжевый цвет
-        embedBuilder.addField("Версия", "Beta 0.2 ", false);
-        embedBuilder.addField("Авторы", "Cyud, poslaya_sairys", false);
+        embedBuilder.setTitle("Information about the bot");
+        embedBuilder.setDescription("This bot was designed to work with a server. WPG.");
+        embedBuilder.setColor(new Color(255, 165, 0)); // Orange
+        embedBuilder.addField("Version", "Beta 1.2 ", false);
+        embedBuilder.addField("Authors", "Cyud, poslaya_sairys", false);
         embedBuilder.setFooter("WPG Bot", null);
 
         event.replyEmbeds(embedBuilder.build()).queue();
