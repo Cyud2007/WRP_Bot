@@ -14,16 +14,16 @@ public class GiveMoneyCommand extends Command {
 
     @Override
     public CommandData createCommand() {
-        return Commands.slash("givemoney", "Выдать деньги пользователю.")
-                .addOption(net.dv8tion.jda.api.interactions.commands.OptionType.USER, "user", "Пользователь, которому нужно выдать деньги", true)
-                .addOption(net.dv8tion.jda.api.interactions.commands.OptionType.INTEGER, "amount", "Сумма денег для выдачи", true);
+        return Commands.slash("givemoney", "Issue money to the user.")
+                .addOption(net.dv8tion.jda.api.interactions.commands.OptionType.USER, "user", "The user who needs to be given money", true)
+                .addOption(net.dv8tion.jda.api.interactions.commands.OptionType.INTEGER, "amount", "Amount of money to be issued", true);
     }
 
     @Override
     public void execute(@NotNull SlashCommandInteractionEvent event) {
-        // Проверка на наличие необходимых прав (например, администратор или модератор)
+        // Checking for the required rights (e.g. administrator or moderator)
         if (!event.getMember().hasPermission(net.dv8tion.jda.api.Permission.MANAGE_SERVER)) {
-            event.reply("У вас нет прав для выполнения этой команды.").queue();
+            event.reply("You do not have permission to execute this command.").queue();
             return;
         }
 
@@ -31,7 +31,7 @@ public class GiveMoneyCommand extends Command {
         long amount = event.getOption("amount").getAsLong();
 
         if (amount <= 0) {
-            event.reply("Сумма должна быть положительной.").queue();
+            event.reply("The amount must be positive.").queue();
             return;
         }
 
@@ -40,8 +40,8 @@ public class GiveMoneyCommand extends Command {
         UserDataManager.updateUserData(userData);
 
         EmbedBuilder embedBuilder = new EmbedBuilder();
-        embedBuilder.setTitle("Деньги выданы!");
-        embedBuilder.setDescription("Пользователю " + userName + " выдано " + amount + " монет.");
+        embedBuilder.setTitle("The money has been issued!");
+        embedBuilder.setDescription("User " + userName + " was issued " + amount + " coins.");
         embedBuilder.setColor(Color.GREEN);
 
         event.replyEmbeds(embedBuilder.build()).queue();
