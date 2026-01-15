@@ -17,7 +17,7 @@ public class InventoryCommand extends Command {
 
     @Override
     public CommandData createCommand() {
-        return Commands.slash("inventory", "Показывает ваш инвентарь.");
+        return Commands.slash("inventory", "Shows your inventory.");
     }
 
     @Override
@@ -27,11 +27,11 @@ public class InventoryCommand extends Command {
         Map<String, Integer> inventory = userData.getInventory();
 
         EmbedBuilder embedBuilder = new EmbedBuilder();
-        embedBuilder.setTitle("Ваш инвентарь");
+        embedBuilder.setTitle("Your inventory");
         embedBuilder.setColor(new Color(75, 0, 130)); 
 
         if (inventory.isEmpty()) {
-            embedBuilder.setDescription("Ваш инвентарь пуст.");
+            embedBuilder.setDescription("Your inventory is empty.");
         } else {
             StringBuilder inventoryDescription = new StringBuilder();
             for (Map.Entry<String, Integer> entry : inventory.entrySet()) {
