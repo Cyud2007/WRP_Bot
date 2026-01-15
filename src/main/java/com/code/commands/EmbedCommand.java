@@ -48,7 +48,7 @@ public class EmbedCommand {
                 requestCounter.set(Integer.parseInt(line));
             }
         } catch (IOException e) {
-            System.err.println("Не удалось загрузить счётчик заявок: " + e.getMessage());
+            System.err.println("Failed to load application counter: " + e.getMessage());
         }
     }
 
@@ -56,7 +56,7 @@ public class EmbedCommand {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(DATA_FILE))) {
             writer.write(String.valueOf(requestCounter.get()));
         } catch (IOException e) {
-            System.err.println("Не удалось сохранить счётчик заявок: " + e.getMessage());
+            System.err.println("Failed to save the application counter: " + e.getMessage());
         }
     }
 
@@ -68,51 +68,50 @@ public class EmbedCommand {
     public void execute(MessageReceivedEvent event) {
         if (event.getMessage().getContentRaw().equalsIgnoreCase("!embed")) {
             EmbedBuilder embed = new EmbedBuilder();
-            embed.setTitle("Зарегистрировать Страну");
-            embed.setDescription("Нажмите кнопку, чтобы зарегистрироваться");
+            embed.setTitle("Register Country");
+            embed.setDescription("Click the button to register");
             embed.setColor(Color.BLUE);
 
-            // Отправляем сообщение с кнопкой в канал
+            // Send a message with a button to the channel
             event.getChannel().sendMessageEmbeds(embed.build())
-                    .setActionRow(Button.primary("send_request_button", "Отправить заявку"))
+                    .setActionRow(Button.primary("send_request_button", "Submit an application"))
                     .queue();
         }
     }
 
     public void onButtonInteraction(ButtonInteractionEvent event) {
         if (event.getComponentId().equals("send_request_button")) {
-            // Создаём текстовый инпут для ввода емодзи и страны
-      
             
-            TextInput countryInput = TextInput.create("country_input", "Введите вашу страну", TextInputStyle.SHORT)
-                    .setPlaceholder("Например: Америка")
+            // Create a text input for entering emoji and country
+            TextInput countryInput = TextInput.create("country_input", "Enter your country", TextInputStyle.SHORT)
+                    .setPlaceholder("For example: America")
                     .setRequired(true)
                     .build();
 
-                    TextInput emojiInput = TextInput.create("emoji_input", "Введите ваш емодзи", TextInputStyle.SHORT)
-                    .setPlaceholder("Например: 🇺🇸")
+                    TextInput emojiInput = TextInput.create("emoji_input", "Enter your emoji", TextInputStyle.SHORT)
+                    .setPlaceholder("For example: 🇺🇸")
                     .setRequired(true)
                     .build();
 
-            // Создаём модальное окно
-            Modal modal = Modal.create("request_modal", "Отправка заявки")
+            // Create a modal window
+            Modal modal = Modal.create("request_modal", "Submitting an application")
                     .addActionRow(countryInput)
                     .addActionRow(emojiInput)
                     .build();
 
-            // Отправляем модальное окно пользователю
+            // Sending a modal window to the user
             event.replyModal(modal).queue();
         } else if (event.getComponentId().startsWith("reject_request_button")) {
-            // Открываем модальное окно для ввода причины отклонения
+            // Open a modal window to enter the reason for rejection.
             String requestId = event.getComponentId().split(":")[1];
             String userId = event.getComponentId().split(":")[2];
 
-            TextInput rejectReasonInput = TextInput.create("reject_reason_input", "Причина отклонения", TextInputStyle.PARAGRAPH)
-                    .setPlaceholder("Например: Не соответствует требованиям...")
+            TextInput rejectReasonInput = TextInput.create("reject_reason_input", "Reason for rejection", TextInputStyle.PARAGRAPH)
+                    .setPlaceholder("For example: Does not meet the requirements...")
                     .setRequired(true)
                     .build();
 
-            Modal rejectModal = Modal.create("reject_reason_modal:" + requestId + ":" + userId, "Причина отклонения заявки")
+            Modal rejectModal = Modal.create("reject_reason_modal:" + requestId + ":" + userId, "Reason for application rejection")
                     .addActionRow(rejectReasonInput)
                     .build();
 
@@ -124,47 +123,47 @@ public class EmbedCommand {
         String modalId = event.getModalId();
 
         if (modalId.startsWith("request_modal")) {
-            // Обработка основной заявки
+            // Processing the main application
         
             ModalMapping countryMapping = event.getValue("country_input");
             ModalMapping emojiMapping = event.getValue("emoji_input");
             if (emojiMapping == null || countryMapping == null) {
-                event.reply("Ошибка: Не удалось получить емодзи или страну.").setEphemeral(true).queue();
+                event.reply("Error: Failed to get emoji or country.").setEphemeral(true).queue();
                 return;
             }
          
             String country = countryMapping.getAsString();
             String emoji = emojiMapping.getAsString();
 
-            // Получаем пользователя, отправившего заявку
+            // We get the user who submitted the request
             User user = event.getUser();
 
-            // Получаем номер заявки
+            // We receive an application number
             int requestNumber = requestCounter.getAndIncrement();
             saveRequestCounter();
 
-            // Создаём Embed сообщение
+            // Create an Embed message
             EmbedBuilder embed = new EmbedBuilder();
-            embed.setTitle("Новая заявка на регистрацию");
-            embed.setDescription(String.format("*%s* хочет зарегистрировать страну: *%s* *%s*", user.getAsTag(), emoji, country ));
+            embed.setTitle("New application for registration");
+            embed.setDescription(String.format("*%s* wants to register the country: *%s* *%s*", user.getAsTag(), emoji, country ));
             embed.setColor(Color.GREEN);
-            embed.setFooter("Номер заявки: #" + requestNumber);
+            embed.setFooter("Application number: #" + requestNumber);
 
             String requestId = "request_" + requestNumber;
             requestStates.put(requestId, "pending");
 
             event.getJDA().getTextChannelById(targetChannelId).sendMessageEmbeds(embed.build())
                     .setActionRow(
-                            Button.success("accept_request_button:" + requestId + ":" + user.getId() + ":" + emoji + ":" + country, "Принять"),
-                            Button.danger("reject_request_button:" + requestId + ":" + user.getId(), "Отклонить")
+                            Button.success("accept_request_button:" + requestId + ":" + user.getId() + ":" + emoji + ":" + country, "Accept"),
+                            Button.danger("reject_request_button:" + requestId + ":" + user.getId(), "Reject")
                     ).queue();
 
-            event.reply("Ваша заявка успешно отправлена! Номер заявки: #" + requestNumber).setEphemeral(true).queue();
+            event.reply("Your application has been successfully submitted! Application number: #" + requestNumber).setEphemeral(true).queue();
         } else if (modalId.startsWith("reject_reason_modal")) {
-            // Обработка модального окна с причиной отклонения
+            // Handling a modal window with a rejection reason
             String[] parts = modalId.split(":");
             if (parts.length < 3) {
-                event.reply("Ошибка: Не удалось разобрать ID модального окна.").setEphemeral(true).queue();
+                event.reply("Error: Unable to parse modal window ID.").setEphemeral(true).queue();
                 return;
             }
 
@@ -173,29 +172,29 @@ public class EmbedCommand {
 
             ModalMapping reasonMapping = event.getValue("reject_reason_input");
             if (reasonMapping == null) {
-                event.reply("Ошибка: Не удалось получить причину отклонения.").setEphemeral(true).queue();
+                event.reply("Error: Unable to get rejection reason.").setEphemeral(true).queue();
                 return;
             }
             String reason = reasonMapping.getAsString();
 
             Guild guild = event.getGuild();
             if (guild == null) {
-                event.reply("Ошибка: Не удалось найти гильдию.").setEphemeral(true).queue();
+                event.reply("Error: Unable to find guild.").setEphemeral(true).queue();
                 return;
             }
 
-            // Получаем пользователя через кеш или API
+            // We get the user through the cache or API
             guild.retrieveMemberById(userId).queue(member -> {
                 if (member == null) {
-                    event.reply("Ошибка: Не удалось найти пользователя.").setEphemeral(true).queue();
+                    event.reply("Error: Unable to find user.").setEphemeral(true).queue();
                     return;
                 }
 
                 User user = member.getUser();
 
                 EmbedBuilder dmEmbed = new EmbedBuilder();
-                dmEmbed.setTitle("Заявка отклонена");
-                dmEmbed.setDescription("Ваша заявка была отклонена. Причина: " + reason);
+                dmEmbed.setTitle("Application rejected");
+                dmEmbed.setDescription("Your application has been rejected. Reason: " + reason);
                 dmEmbed.setColor(Color.RED);
 
                 user.openPrivateChannel().queue(channel -> {
@@ -203,8 +202,8 @@ public class EmbedCommand {
                 });
 
                 EmbedBuilder channelEmbed = new EmbedBuilder();
-                channelEmbed.setTitle("Заявка отклонена");
-                channelEmbed.setDescription("Заявка отклонена. Игрок " + member.getEffectiveName() + " не принят. Причина: " + reason);
+                channelEmbed.setTitle("Application rejected");
+                channelEmbed.setDescription("Request rejected. Player " + member.getEffectiveName() + " not accepted. Reason: " + reason);
                 channelEmbed.setColor(Color.RED);
 
                 guild.getTextChannelById(targetChannelId)
@@ -212,8 +211,8 @@ public class EmbedCommand {
 
                 requestStates.put(requestId, "rejected");
             }, error -> {
-                System.err.println("Ошибка: Не удалось найти пользователя. " + error.getMessage());
-                event.reply("Ошибка: Не удалось найти пользователя.").setEphemeral(true).queue();
+                System.err.println("Error: Unable to find user. " + error.getMessage());
+                event.reply("Error: Unable to find user.").setEphemeral(true).queue();
             });
         }
     }
@@ -226,23 +225,23 @@ public class EmbedCommand {
     
         String requestState = requestStates.get(requestId);
         if (requestState == null) {
-            event.reply("Ошибка: Заявка не найдена.").setEphemeral(true).queue();
+            event.reply("Error: Application not found.").setEphemeral(true).queue();
             return;
         }
         if (!requestState.equals("pending")) {
-            event.reply("Ошибка: Заявка уже обработана.").setEphemeral(true).queue();
+            event.reply("Error: Request already processed.").setEphemeral(true).queue();
             return;
         }
     
         Guild guild = event.getGuild();
         if (guild == null) {
-            event.reply("Ошибка: Не удалось найти гильдию.").setEphemeral(true).queue();
+            event.reply("Error: Unable to find guild.").setEphemeral(true).queue();
             return;
         }
     
         guild.retrieveMemberById(userId).queue(member -> {
             if (member == null) {
-                event.reply("Ошибка: Не удалось найти пользователя.").setEphemeral(true).queue();
+                event.reply("Error: Unable to find user.").setEphemeral(true).queue();
                 return;
             }
     
@@ -254,27 +253,27 @@ public class EmbedCommand {
                 String country = parts[4];
     
                 if (isUserAlreadyRegistered(guild, user)) {
-                    event.reply("Пользователь уже зарегистрирован.").setEphemeral(true).queue();
+                    event.reply("The user is already registered.").setEphemeral(true).queue();
                     return;
                 }
     
                 String newNickname = emoji + " " + country;
                 guild.modifyNickname(member, newNickname).queue();
     
-                // Выдаем роль пользователю
+                // Granting a role to a user
                 Role role = guild.getRoleById(roleId);
                 if (role != null) {
                     guild.addRoleToMember(member, role).queue(
                             success -> {
-                                event.reply("Роль успешно выдана!").setEphemeral(true).queue();
+                                event.reply("The role was successfully issued.!").setEphemeral(true).queue();
                             },
                             error -> {
-                                System.err.println("Не удалось выдать роль пользователю " + user.getId() + ": " + error.getMessage());
-                                event.reply("Не удалось выдать роль пользователю.").setEphemeral(true).queue();
+                                System.err.println("Failed to grant role to user " + user.getId() + ": " + error.getMessage());
+                                event.reply("Failed to grant role to user.").setEphemeral(true).queue();
                             }
                     );
                 } else {
-                    event.reply("Роль не найдена.").setEphemeral(true).queue();
+                    event.reply("Role not found.").setEphemeral(true).queue();
                 }
                 
             
@@ -282,25 +281,25 @@ public class EmbedCommand {
                 if (economyRole != null) {
                     guild.addRoleToMember(member, economyRole).queue(
                             success -> {
-                                event.reply("Вторая роль успешно выдана!").setEphemeral(true).queue();
+                                event.reply("The second role was successfully given out!").setEphemeral(true).queue();
                             },
                             error -> {
-                                System.err.println("Не удалось выдать вторую роль пользователю " + user.getId() + ": " + error.getMessage());
-                                event.reply("Не удалось выдать вторую роль пользователю.").setEphemeral(true).queue();
+                                System.err.println("Failed to assign second role to user " + user.getId() + ": " + error.getMessage());
+                                event.reply("Failed to assign second role to user.").setEphemeral(true).queue();
                             }
                     );
                 } else {
-                    event.reply("Вторая роль не найдена.").setEphemeral(true).queue();
+                    event.reply("Second role not found.").setEphemeral(true).queue();
                 }
 
     
-                // Создаем данные пользователя и сохраняем их
+                // Create user data and save it
                 UserData userData = new UserData(newNickname, 0, "");
                 UserDataManager.updateUserData(userData);
     
                 EmbedBuilder dmEmbed = new EmbedBuilder();
-                dmEmbed.setTitle("Заявка принята");
-                dmEmbed.setDescription("Ваша заявка принята!");
+                dmEmbed.setTitle("Application accepted");
+                dmEmbed.setDescription("Your application has been accepted.!");
                 dmEmbed.setColor(Color.GREEN);
     
                 user.openPrivateChannel().queue(channel -> {
@@ -308,8 +307,8 @@ public class EmbedCommand {
                 });
     
                 EmbedBuilder channelEmbed = new EmbedBuilder();
-                channelEmbed.setTitle("Игрок принят");
-                channelEmbed.setDescription("Заявка принята! Игрок " + nickname + " успешно принят.");
+                channelEmbed.setTitle("The player has been accepted");
+                channelEmbed.setDescription("Application accepted! Player " + nickname + " has been successfully accepted..");
                 channelEmbed.setColor(Color.BLUE);
     
                 guild.getTextChannelById(targetChannelId)
@@ -318,20 +317,20 @@ public class EmbedCommand {
                 requestStates.put(requestId, "accepted");
     
             } else if (action.equals("reject_request_button")) {
-                TextInput rejectReasonInput = TextInput.create("reject_reason_input", "Причина отклонения", TextInputStyle.PARAGRAPH)
-                        .setPlaceholder("Например: Не соответствует требованиям...")
+                TextInput rejectReasonInput = TextInput.create("reject_reason_input", "Reason for rejection", TextInputStyle.PARAGRAPH)
+                        .setPlaceholder("For example: Does not meet requirements...")
                         .setRequired(true)
                         .build();
     
-                Modal rejectModal = Modal.create("reject_reason_modal:" + requestId + ":" + userId, "Причина отклонения заявки")
+                Modal rejectModal = Modal.create("reject_reason_modal:" + requestId + ":" + userId, "Reason for application rejection")
                         .addActionRow(rejectReasonInput)
                         .build();
     
                 event.replyModal(rejectModal).queue();
             }
         }, error -> {
-            System.err.println("Ошибка: Не удалось найти пользователя. " + error.getMessage());
-            event.reply("Ошибка: Не удалось найти пользователя.").setEphemeral(true).queue();
+            System.err.println("Error: Unable to find user. " + error.getMessage());
+            event.reply("Error: Unable to find user.").setEphemeral(true).queue();
         });
     }
 }    
