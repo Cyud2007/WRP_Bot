@@ -14,8 +14,8 @@ public class ViewBalanceCommand extends Command {
 
     @Override
     public CommandData createCommand() {
-        return Commands.slash("v-balance", "Просмотреть баланс игрока.")
-                .addOption(net.dv8tion.jda.api.interactions.commands.OptionType.USER, "user", "Пользователь, баланс которого нужно посмотреть", true);
+        return Commands.slash("v-balance", "View player balance.")
+                .addOption(net.dv8tion.jda.api.interactions.commands.OptionType.USER, "user", "The user whose balance you want to view", true);
     }
 
     @Override
@@ -25,8 +25,8 @@ public class ViewBalanceCommand extends Command {
         UserData userData = UserDataManager.getUserData(userName);
 
         EmbedBuilder embedBuilder = new EmbedBuilder();
-        embedBuilder.setTitle("Баланс пользователя");
-        embedBuilder.setDescription("Пользователь " + userName + " имеет " + userData.getBalance() + " монет.");
+        embedBuilder.setTitle("User balance");
+        embedBuilder.setDescription("User " + userName + " has " + userData.getBalance() + " coins.");
         embedBuilder.setColor(Color.BLUE);
 
         event.replyEmbeds(embedBuilder.build()).queue();
