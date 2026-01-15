@@ -16,55 +16,55 @@ import java.util.Map;
 public class CollectCommand extends Command {
 
     private static final Map<String, Integer> ROLE_REWARDS = Map.of(
-            "1277288067589341184", 2000,   // Экономика лв1
-            "1277288432623681547", 5000,   // Экономика лв2
-            "1277288539360333824", 10000,  // Экономика лв3
-            "1277288626526621696", 20000,  // Экономика лв4
-            "1277288691685003435", 40000,  // Экономика лв5
-            "1277288800359284869", 80000,  // Экономика лв6
-            "1277288857439572048", 160000  // Экономика лв7
+            "1277288067589341184", 2000,   // Economy lv1
+            "1277288432623681547", 5000,   // Economy lv2
+            "1277288539360333824", 10000,  // Economy lv3
+            "1277288626526621696", 20000,  // Economy lv4
+            "1277288691685003435", 40000,  // Economy lv5
+            "1277288800359284869", 80000,  // Economy lv6
+            "1277288857439572048", 160000  // Economy lv7
     );
 
     private static final Map<String, Double> ECONOMY_MULTIPLIERS = Map.of(
-            "1277288691685003435", 1.8,  // Экономика лв5
-            "1277288800359284869", 2.0,  // Экономика лв6
-            "1277288857439572048", 2.2   // Экономика лв7
+            "1277288691685003435", 1.8,  // Economy lv5
+            "1277288800359284869", 2.0,  // Economy lv6
+            "1277288857439572048", 2.2   // Economy lv7
     );
 
     private static final String MINER_ROLE_ID = "1279083348504875133";
-    private static final String SHIPYARD_ROLE_ID = "1279083382160228444";  // ID Верфи
+    private static final String SHIPYARD_ROLE_ID = "1279083382160228444";  // Shipyard ID
 
     private static final int BASE_IRON_REWARD = 10000;
-    private static final int BASE_GOLD_REWARD = 5000;  // Базовая награда за золото
-    private static final int BASE_OIL_REWARD = 600;   // Базовая награда за нефть
+    private static final int BASE_GOLD_REWARD = 5000;  // Base gold reward
+    private static final int BASE_OIL_REWARD = 600;   // Base oil reward
 
     @Override
     public CommandData createCommand() {
-        return Commands.slash("collect", "Получить ресурсы.");
+        return Commands.slash("collect", "Get resources.");
     }
 
     @Override
     public void execute(@NotNull SlashCommandInteractionEvent event) {
         Member member = event.getMember();
         if (member == null) {
-            sendErrorEmbed(event, "Ошибка: не удалось найти участника. Обратитесь в администрацию.");
+            sendErrorEmbed(event, "Error: The member could not be found. Contact the administration.");
             return;
         }
 
         UserData userData = UserDataManager.getUserData(member.getId());
 
-        // Проверка кулдауна
+        // Cooldown check
         if (!userData.canCollect()) {
             LocalDateTime nextAllowedTime = userData.getLastJobTime().plusHours(UserData.COOLDOWN_HOURS);
             long hoursLeft = java.time.Duration.between(LocalDateTime.now(), nextAllowedTime).toHours();
-            sendErrorEmbed(event, "Пожалуйста, подождите " + hoursLeft + " часов перед следующим сбором.");
+            sendErrorEmbed(event, "Please wait " + hoursLeft + " hours before the next collection.");
             return;
         }
 
         int totalReward = 0;
         double multiplier = 1.0;
 
-        // Проверяем роли для начисления монет и ресурсов
+        // Checking roles for coin and resource accrual
         for (String roleId : ROLE_REWARDS.keySet()) {
             if (member.getRoles().stream().anyMatch(role -> role.getId().equals(roleId))) {
                 totalReward += ROLE_REWARDS.get(roleId);
@@ -72,21 +72,21 @@ public class CollectCommand extends Command {
             }
         }
 
-        // Начисляем монеты
+        // We are accruing coins
         userData.addToBalance(totalReward);
 
-        // Начисляем золото
+        // We are accruing gold
         int goldReward = (int) (BASE_GOLD_REWARD * multiplier);
         userData.addGold(goldReward);
 
-        // Начисляем железо
+        // We are adding iron
         int ironReward = 0;
         if (member.getRoles().stream().anyMatch(role -> role.getId().equals(MINER_ROLE_ID))) {
             ironReward = (int) (BASE_IRON_REWARD * multiplier);
             userData.addIron(ironReward);
         }
 
-        // Начисляем нефть
+        // We are calculating oil
         int oilReward = 0;
         if (member.getRoles().stream().anyMatch(role -> role.getId().equals(SHIPYARD_ROLE_ID))) {
             oilReward = (int) (BASE_OIL_REWARD * multiplier);
@@ -94,29 +94,29 @@ public class CollectCommand extends Command {
         }
 
         UserDataManager.updateUserData(userData);
-        userData.updateLastJobTime();  // Обновляем время последнего использования команды
+        userData.updateLastJobTime();  // Updating the last time a command was used
 
         EmbedBuilder embedBuilder = new EmbedBuilder();
-        embedBuilder.setTitle("Ресурсы собраны");
-        embedBuilder.setDescription("Вы получили " + totalReward + " монет.");
+        embedBuilder.setTitle("Resources have been collected");
+        embedBuilder.setDescription("You received " + totalReward + " coins.");
         embedBuilder.setColor(Color.GREEN);
 
-        // Формируем описание ресурсов
+        // Forming a description of resources
         StringBuilder resourcesDescription = new StringBuilder();
-        resourcesDescription.append("Золото: ").append(userData.getGold());
+        resourcesDescription.append("Gold: ").append(userData.getGold());
         if (multiplier > 1.0) {
             resourcesDescription.append(" (x").append(multiplier).append(")");
         }
-        resourcesDescription.append("\nЖелезо: ").append(userData.getIron());
+        resourcesDescription.append("\nIron: ").append(userData.getIron());
         if (ironReward > 0) {
             resourcesDescription.append(" (x").append(multiplier).append(")");
         }
-        resourcesDescription.append("\nНефть: ").append(userData.getOil());
+        resourcesDescription.append("\nOil: ").append(userData.getOil());
         if (oilReward > 0) {
             resourcesDescription.append(" (x").append(multiplier).append(")");
         }
 
-        embedBuilder.addField("Ресурсы:", resourcesDescription.toString(), false);
+        embedBuilder.addField("Resources:", resourcesDescription.toString(), false);
 
         event.replyEmbeds(embedBuilder.build()).queue();
     }
