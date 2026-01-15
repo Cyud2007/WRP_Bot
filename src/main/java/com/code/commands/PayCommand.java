@@ -14,9 +14,9 @@ public class PayCommand extends Command {
 
     @Override
     public CommandData createCommand() {
-        return Commands.slash("pay", "Передать деньги другому пользователю.")
-                .addOption(net.dv8tion.jda.api.interactions.commands.OptionType.USER, "user", "Пользователь, которому нужно передать деньги", true)
-                .addOption(net.dv8tion.jda.api.interactions.commands.OptionType.INTEGER, "amount", "Сумма денег для передачи", true);
+        return Commands.slash("pay", "Transfer money to another user.")
+                .addOption(net.dv8tion.jda.api.interactions.commands.OptionType.USER, "user", "The user to whom money needs to be transferred", true)
+                .addOption(net.dv8tion.jda.api.interactions.commands.OptionType.INTEGER, "amount", "Amount of money to be transferred", true);
     }
 
     @Override
@@ -26,13 +26,13 @@ public class PayCommand extends Command {
         long amount = event.getOption("amount").getAsLong();
 
         if (amount <= 0) {
-            event.reply("Сумма должна быть положительной.").queue();
+            event.reply("The amount must be positive.").queue();
             return;
         }
 
         UserData senderData = UserDataManager.getUserData(senderName);
         if (senderData.getBalance() < amount) {
-            event.reply("У вас недостаточно средств для этой операции.").queue();
+            event.reply("You do not have sufficient funds for this operation..").queue();
             return;
         }
 
@@ -44,8 +44,8 @@ public class PayCommand extends Command {
         UserDataManager.updateUserData(receiverData);
 
         EmbedBuilder embedBuilder = new EmbedBuilder();
-        embedBuilder.setTitle("Транзакция успешна!");
-        embedBuilder.setDescription("Вы передали " + amount + " монет пользователю " + receiverName + ".");
+        embedBuilder.setTitle("Transaction successful!");
+        embedBuilder.setDescription("You transferred " + amount + " coins to the user " + receiverName + ".");
         embedBuilder.setColor(Color.GREEN);
 
         event.replyEmbeds(embedBuilder.build()).queue();
