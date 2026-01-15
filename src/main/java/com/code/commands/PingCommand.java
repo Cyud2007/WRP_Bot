@@ -11,7 +11,7 @@ public class PingCommand extends Command {
 
     @Override
     public CommandData createCommand() {
-        return Commands.slash("ping", "Возвращает ответ со временем задержки.");
+        return Commands.slash("ping", "Returns a response with a delay time.");
     }
 
     @Override
