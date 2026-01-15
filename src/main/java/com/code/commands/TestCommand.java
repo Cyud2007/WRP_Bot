@@ -19,12 +19,12 @@ public class TestCommand {
     public void execute(MessageReceivedEvent event) {
         if (event.getMessage().getContentRaw().equalsIgnoreCase("!test")) {
             EmbedBuilder embed = new EmbedBuilder();
-            embed.setTitle("Верификация");
-            embed.setDescription("Нажмите кнопку, чтобы пройти верификацию");
+            embed.setTitle("Verification");
+            embed.setDescription("Click the button to complete verification");
             embed.setColor(Color.BLUE);
 
             event.getChannel().sendMessageEmbeds(embed.build())
-                    .setActionRow(Button.primary("test_button", "Верификация"))
+                    .setActionRow(Button.primary("test_button", "Verification"))
                     .queue();
         }
     }
@@ -35,16 +35,16 @@ public class TestCommand {
 
             user.openPrivateChannel().queue(privateChannel -> {
                 EmbedBuilder embed = new EmbedBuilder();
-                embed.setTitle("Верификация");
-                embed.setDescription("Нажмите на кнопку, чтобы пройти верификацию");
+                embed.setTitle("Verification");
+                embed.setDescription("Click the button to complete verification.");
                 embed.setColor(Color.GREEN);
 
                 privateChannel.sendMessageEmbeds(embed.build())
-                        .setActionRow(Button.primary("private_test_button", "Верификация!"))
+                        .setActionRow(Button.primary("private_test_button", "Verification!"))
                         .queue();
             });
 
-            event.reply("Сообщение отправлено в личные сообщения.").setEphemeral(true).queue();
+            event.reply("The message has been sent to private messages.").setEphemeral(true).queue();
         } else if (event.getComponentId().equals("private_test_button")) {
 
             Guild guild = event.getJDA().getGuildById(guildId);
@@ -61,21 +61,21 @@ public class TestCommand {
                                     success -> {
                          
                                         guild.removeRoleFromMember(member, unverifiedRole).queue(
-                                                successRemove -> event.reply("Вы успешно прошли верификацию.").setEphemeral(true).queue(),
-                                                error -> event.reply("Не удалось убрать роль 'Неверифицированный'.").setEphemeral(true).queue()
+                                                successRemove -> event.reply("You have successfully passed verification.").setEphemeral(true).queue(),
+                                                error -> event.reply("Failed to remove role 'Unverified'.").setEphemeral(true).queue()
                                         );
                                     },
-                                    error -> event.reply("Не удалось выдать роль 'Верифицированный'.").setEphemeral(true).queue()
+                                    error -> event.reply("Failed to grant the 'Verified' role.").setEphemeral(true).queue()
                             );
                         } else {
-                            event.reply("Не удалось найти роль 'Верифицированный' или 'Неверифицированный'.").setEphemeral(true).queue();
+                            event.reply("Could not find the role 'Verified' or 'Unverified'.").setEphemeral(true).queue();
                         }
                     } else {
-                        event.reply("Участник не найден.").setEphemeral(true).queue();
+                        event.reply("Participant not found.").setEphemeral(true).queue();
                     }
-                }, error -> event.reply("Не удалось получить участника.").setEphemeral(true).queue());
+                }, error -> event.reply("Failed to get participant.").setEphemeral(true).queue());
             } else {
-                event.reply("Сервер не найден.").setEphemeral(true).queue();
+                event.reply("Server not found.").setEphemeral(true).queue();
             }
         }
     }
