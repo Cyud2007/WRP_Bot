@@ -11,13 +11,13 @@ public abstract class Command {
     public Command() {
     }
 
-    // Метод для создания данных команды
+    // Method for creating command data
     public abstract CommandData createCommand();
 
-    // Метод для выполнения SlashCommand
+    // Method for executing SlashCommand
     public abstract void execute(@NotNull SlashCommandInteractionEvent event);
 
-    // Метод для выполнения с текстовыми командами 
+    // Method for execution with text commands 
     public void execute(@NotNull MessageReceivedEvent event) {
     
     }
