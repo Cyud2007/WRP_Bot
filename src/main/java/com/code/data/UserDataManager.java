@@ -15,7 +15,7 @@ public class UserDataManager {
     private static final Map<String, UserData> usersData = new HashMap<>();
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    // Загружаем данные при первом обращении к UserDataManager
+    // Loading data on the first call to UserDataManager
     static {
         loadData();
     }
@@ -25,7 +25,7 @@ public class UserDataManager {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(";");
-                if (parts.length == 7) {  // Ожидаем 7 частей данных
+                if (parts.length == 7) {  // We are expecting 7 pieces of data
                     String username = parts[0];
                     long balance = Long.parseLong(parts[1]);
                     String inventoryData = parts[2];
@@ -69,6 +69,6 @@ public class UserDataManager {
 
     public static void updateUserData(UserData userData) {
         usersData.put(userData.getUsername(), userData);
-        saveData();  // Сохраняем данные после обновления
+        saveData();  // Saving data after updating
     }
 }
