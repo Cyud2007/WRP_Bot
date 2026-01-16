@@ -18,9 +18,9 @@ public class KickCommand extends Command {
 
     @Override
     public CommandData createCommand() {
-        return Commands.slash("kick", "Кикает игрока с сервера и отправляет сообщение с причиной.")
-                .addOptions(new OptionData(OptionType.USER, "игрок", "Игрок, которого нужно кикнуть", true))
-                .addOptions(new OptionData(OptionType.STRING, "причина", "Причина кика", true));
+        return Commands.slash("kick", "Kicks a player from the server and sends a message with the reason.")
+                .addOptions(new OptionData(OptionType.USER, "player", "The player who needs to be kicked", true))
+                .addOptions(new OptionData(OptionType.STRING, "reason", "Reason for kick", true));
     }
 
     @Override
@@ -29,40 +29,40 @@ public class KickCommand extends Command {
         String reason = event.getOption("причина").getAsString();
 
         if (memberToKick == null) {
-            event.reply("Не удалось найти указанного игрока.").setEphemeral(true).queue();
+            event.reply("The specified player could not be found.").setEphemeral(true).queue();
             return;
         }
 
         Member moderator = event.getMember();
 
         if (!moderator.hasPermission(Permission.KICK_MEMBERS)) {
-            event.reply("У вас нет прав на кик участников.").setEphemeral(true).queue();
+            event.reply("You don't have permission to kick members.").setEphemeral(true).queue();
             return;
         }
 
         // Создание embed сообщения для текстового канала
         EmbedBuilder embedBuilder = new EmbedBuilder();
-        embedBuilder.setTitle("Участник кикнут");
-        embedBuilder.setDescription(memberToKick.getEffectiveName() + " был кикнут.");
-        embedBuilder.setColor(new Color(255, 0, 0)); // Красный цвет
-        embedBuilder.addField("Модератор", moderator.getEffectiveName(), false);
-        embedBuilder.addField("Причина", reason, false);
+        embedBuilder.setTitle("The participant was kicked");
+        embedBuilder.setDescription(memberToKick.getEffectiveName() + " was kicked.");
+        embedBuilder.setColor(new Color(255, 0, 0)); // Red
+        embedBuilder.addField("Moderator", moderator.getEffectiveName(), false);
+        embedBuilder.addField("Reason", reason, false);
 
-        // Отправка сообщения в текстовый канал
+        // Sending a message to a text channel
         event.replyEmbeds(embedBuilder.build()).queue();
 
-        // Отправка личного сообщения кикнутому участнику
+        // Sending a private message to a kicked member
         EmbedBuilder privateMessage = new EmbedBuilder();
-        privateMessage.setTitle("Вы были кикнуты с сервера");
-        privateMessage.setDescription("Вас кикнули с сервера " + event.getGuild().getName() + ".");
-        privateMessage.setColor(new Color(255, 0, 0)); // Красный цвет
-        privateMessage.addField("Причина", reason, false);
+        privateMessage.setTitle("You have been kicked from the server");
+        privateMessage.setDescription("You have been kicked from the server " + event.getGuild().getName() + ".");
+        privateMessage.setColor(new Color(255, 0, 0)); // Red
+        privateMessage.addField("Reason", reason, false);
 
         memberToKick.getUser().openPrivateChannel()
                 .flatMap(channel -> channel.sendMessageEmbeds(privateMessage.build()))
                 .queue();
 
-        // Кик участника с использованием Guild#kick
+        // Kick a participant using Guild#kick
         event.getGuild().kick(memberToKick, reason).queue();
     }
 }
