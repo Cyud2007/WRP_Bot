@@ -19,20 +19,20 @@ public class Main {
     public static void main(String[] args) {
 
         try {
-            // Получение токена из конфигурации
+            // Getting a token from configuration
             String token = Config.getBotToken();
             if (token == null || token.isEmpty()) {
                 throw new IllegalArgumentException("Токен бота не может быть пустым.");
             }
 
-            // Инициализация бота с необходимыми правами и слушателями
+            // Initializing the bot with the necessary permissions and listeners
             JDABuilder builder = JDABuilder.createDefault(token)
                     .enableIntents(GatewayIntent.GUILD_MESSAGES, GatewayIntent.MESSAGE_CONTENT, GatewayIntent.GUILD_MEMBERS, GatewayIntent.DIRECT_MESSAGES, GatewayIntent.GUILD_PRESENCES )
                     .setActivity(Activity.playing("WRP"))
                     .addEventListeners(new BotListener());
 
             JDA jda = builder.build();
-            jda.awaitReady(); // Ожидание полной готовности бота
+            jda.awaitReady(); // Waiting for the bot to be fully ready
 
             if (jda.getStatus() != JDA.Status.CONNECTED) {
                 logger.warn("Bot is not fully connected. Current status: " + jda.getStatus());
@@ -40,24 +40,24 @@ public class Main {
                 logger.info("Bot is fully connected and ready.");
             }
 
-            // Регистрация команд
+            // Team registration
             CommandRegistry.registerCommands(jda);
 
-            // Добавляем Shutdown Hook для автоматического сохранения данных при завершении работы
+            // Add a Shutdown Hook to automatically save data when shutting down
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-                UserDataManager.saveData(); // Сохранение данных
-                logger.info("Данные успешно сохранены при завершении работы.");
+                UserDataManager.saveData(); // Saving data
+                logger.info("Data saved successfully on shutdown.");
             }));
 
 
-            System.out.println("Бот успешно запущен и готов к работе.");
+            System.out.println("The bot has been successfully launched and is ready to work..");
             logger.info("Bot is running ONREADY.");
 
         } catch (InterruptedException e) {
-            logger.error("Ошибка ожидания готовности бота", e);
+            logger.error("Error waiting for bot to be ready", e);
             Thread.currentThread().interrupt();
         } catch (Exception e) {
-            logger.error("Ошибка при запуске бота", e);
+            logger.error("Error starting the bot", e);
         }
     }
 }
