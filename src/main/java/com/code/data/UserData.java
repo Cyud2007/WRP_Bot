@@ -8,15 +8,15 @@ import java.util.stream.Collectors;
 public class UserData {
     private final String username;
     private long balance;
-    private LocalDateTime lastJobTime;  // Время последнего использования команды
+    private LocalDateTime lastJobTime;  // Last time the command was used
     private final Map<String, Integer> inventory;
 
-    // Новые поля для ресурсов
+    // New fields for resources
     private int gold;
     private int iron;
     private int oil;
 
-    public static final int COOLDOWN_HOURS = 18;  // Время кулдауна в часах
+    public static final int COOLDOWN_HOURS = 18;  // Cooldown time in hours
 
     public UserData(String username, long balance, String inventoryData) {
         this.username = username;
@@ -45,7 +45,7 @@ public class UserData {
         if (this.balance >= amount) {
             this.balance -= amount;
         } else {
-            throw new IllegalArgumentException("Недостаточно средств.");
+            throw new IllegalArgumentException("Insufficient funds.");
         }
     }
 
@@ -61,7 +61,7 @@ public class UserData {
         return inventory;
     }
 
-    // Методы для работы с золотом
+    // Methods for working with gold
     public int getGold() {
         return gold;
     }
@@ -74,7 +74,7 @@ public class UserData {
         this.gold += amount;
     }
 
-    // Методы для работы с железом
+    // Methods for working with iron
     public int getIron() {
         return iron;
     }
@@ -87,7 +87,7 @@ public class UserData {
         this.iron += amount;
     }
 
-    // Методы для работы с нефтью
+    // Methods for working with oil
     public int getOil() {
         return oil;
     }
@@ -100,12 +100,12 @@ public class UserData {
         this.oil += amount;
     }
 
-    // Добавляет предмет в инвентарь
+    // Adds an item to the inventory
     public void addItemToInventory(String item, int quantity) {
         inventory.put(item, inventory.getOrDefault(item, 0) + quantity);
     }
 
-    // Удаляет предмет из инвентаря
+    // Removes an item from your inventory.
     public boolean removeItemFromInventory(String item, int quantity) {
         int currentQuantity = inventory.getOrDefault(item, 0);
         if (currentQuantity >= quantity) {
@@ -151,7 +151,7 @@ public class UserData {
                     int quantity = Integer.parseInt(parts[1]);
                     parsedInventory.put(itemName, quantity);
                 } catch (NumberFormatException e) {
-                    System.err.println("Ошибка формата количества для товара: " + item);
+                    System.err.println("Error in quantity format for product: " + item);
                 }
             }
         }
