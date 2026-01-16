@@ -41,7 +41,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 public class BotListener extends ListenerAdapter {
 
-    // Слеш команды
+    // Slash commands
     private final PingCommand pingCommand = new PingCommand();
     private final InfoCommand infoCommand = new InfoCommand();
     private final ShopCommand shopCommand = new ShopCommand();
@@ -60,7 +60,7 @@ public class BotListener extends ListenerAdapter {
     private final MuteCommand muteCommand = new MuteCommand();
     private final KickCommand kickCommand = new KickCommand(); 
 
-    // Текстовые команды
+    // Text commands
     private final TestCommand testCommand = new TestCommand();
     private final EmbedCommand embedCommand = new EmbedCommand();
     private final RulesCommand rulesCommand = new RulesCommand();
@@ -186,10 +186,10 @@ public class BotListener extends ListenerAdapter {
 
     @Override
     public void onButtonInteraction(ButtonInteractionEvent event) {
-        // Обрабатываем кнопки для TestCommand и EmbedCommand
+        // Handling buttons for TestCommand and EmbedCommand
         testCommand.onButtonInteraction(event);
 
-        // Проверка для кнопок EmbedCommand
+        // Testing for EmbedCommand buttons
         if (event.getComponentId().startsWith("accept_request_button") || event.getComponentId().startsWith("reject_request_button")) {
             embedCommand.onButtonInteractionForDecision(event);
         } else {
@@ -199,7 +199,7 @@ public class BotListener extends ListenerAdapter {
 
     @Override
     public void onModalInteraction(ModalInteractionEvent event) {
-        // Обрабатываем модальные окна в EmbedCommand
+        // Handling modal windows in EmbedCommand
         embedCommand.onModalInteraction(event);
     }
 
