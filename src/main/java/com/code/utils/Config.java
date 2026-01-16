@@ -15,21 +15,21 @@ public class Config {
             if (input != null) {
                 properties.load(input);
             } else {
-                logger.warn("bot.properties не найден, используются переменные окружения.");
+                logger.warn("bot.properties not found, using environment variables.");
             }
         } catch (Exception e) {
-            logger.error("Ошибка при загрузке bot.properties.", e);
+            logger.error("Error loading bot.properties.", e);
         }
     }
 
     public static String getBotToken() {
-        // Попытка получить токен из переменной окружения
+        // Trying to get a token from an environment variable
         String envToken = System.getenv("BOT_TOKEN");
         if (envToken != null && !envToken.isEmpty()) {
             return envToken;
         }
 
-        // Альтернатива: из файла bot.properties
+        // Alternative: from the bot.properties file
         return properties.getProperty("bot.token");
     }
 
