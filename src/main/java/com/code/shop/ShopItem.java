@@ -3,12 +3,12 @@ package com.code.shop;
 public class ShopItem {
     private final String name;
     private final int price;
-    private final String category; // Новое поле для категории
+    private final String category; // New field for category
 
     public ShopItem(String name, int price, String category) {
         this.name = name;
         this.price = price;
-        this.category = category; // Инициализация категории
+        this.category = category; // Initializing a category
     }
 
     public String getName() {
@@ -20,6 +20,6 @@ public class ShopItem {
     }
 
     public String getCategory() {
-        return category; // Возвращаем категорию
+        return category; // Returning the category
     }
 }
