@@ -42,7 +42,7 @@ public class CommandRegistry {
                         .filter(name -> !newCommandNames.contains(name))
                         .collect(Collectors.toList());
 
-                // Удаляем устаревшие команды
+                // Removing obsolete commands
                 commandsToRemove.forEach(name -> {
                     existingCommands.stream()
                             .filter(command -> command.getName().equals(name))
