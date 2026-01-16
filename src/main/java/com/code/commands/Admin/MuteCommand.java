@@ -21,34 +21,34 @@ public class MuteCommand extends Command {
 
     @Override
     public CommandData createCommand() {
-        return Commands.slash("mute", "Замутить пользователя на определённое время.")
+        return Commands.slash("mute", "Muddy a user for a certain amount of time.")
                 .addOptions(
-                        new OptionData(OptionType.USER, "игрок", "Пользователь, которого нужно замутить", true),
-                        new OptionData(OptionType.STRING, "время", "Длительность мута (например, 1h, 30m)", true)
+                        new OptionData(OptionType.USER, "player", "The user to be hooked", true),
+                        new OptionData(OptionType.STRING, "time", "Mute duration (e.g. 1h, 30m)", true)
                 );
     }
 
     @Override
     public void execute(@NotNull SlashCommandInteractionEvent event) {
-        // Получаем параметры
-        Member member = event.getOption("игрок").getAsMember();
-        String timeInput = event.getOption("время").getAsString();
+        // Getting parameters
+        Member member = event.getOption("player").getAsMember();
+        String timeInput = event.getOption("time").getAsString();
 
         if (member == null) {
-            event.reply("Пользователь не найден!").setEphemeral(true).queue();
+            event.reply("User not found!").setEphemeral(true).queue();
             return;
         }
 
-        // Проверка правильности формата времени
+        // Checking the correct time format
         Pattern pattern = Pattern.compile("(\\d+)([mhd])");
         Matcher matcher = pattern.matcher(timeInput);
 
         if (!matcher.matches()) {
-            event.reply("Неверный формат времени! Используйте формат, например, 1h для 1 часа или 30m для 30 минут.").setEphemeral(true).queue();
+            event.reply("Invalid time format! Use a format such as 1h for 1 hour or 30m for 30 minutes.").setEphemeral(true).queue();
             return;
         }
 
-        // Определяем количество минут в зависимости от единицы измерения
+        // We determine the number of minutes depending on the unit of measurement
         int duration = Integer.parseInt(matcher.group(1));
         String unit = matcher.group(2);
         long durationInMinutes;
@@ -58,7 +58,7 @@ public class MuteCommand extends Command {
                 durationInMinutes = duration * 60L;
                 break;
             case "d":
-                durationInMinutes = duration * 1440L; // 1 день = 1440 минут
+                durationInMinutes = duration * 1440L; // 1 day = 1440 minutes
                 break;
             case "m":
             default:
@@ -66,36 +66,36 @@ public class MuteCommand extends Command {
                 break;
         }
 
-        // Получаем роль "Мут"
-        Role muteRole = event.getGuild().getRoleById("1278809802671263826"); // Укажите ID вашей роли "Мут"
+        // We get the role of "Mute"
+        Role muteRole = event.getGuild().getRoleById("1278809802671263826"); // Please enter your role ID "Mute"
 
         if (muteRole == null) {
-            event.reply("Роль 'Мут' не найдена!").setEphemeral(true).queue();
+            event.reply("Role 'Mute' not found!").setEphemeral(true).queue();
             return;
         }
 
-        // Назначаем роль "Мут"
+        // Assign the role of "Mute"
         event.getGuild().addRoleToMember(member, muteRole).queue();
 
-        // Отправляем сообщение в ЛС пользователю
+        // Send a private message to the user
         member.getUser().openPrivateChannel().queue(channel -> 
-            channel.sendMessage("Вы замучены на " + duration + " " + (unit.equals("h") ? "часов" : unit.equals("d") ? "дней" : "минут") + ".").queue()
+            channel.sendMessage("You are tortured by " + duration + " " + (unit.equals("h") ? "hours" : unit.equals("d") ? "days" : "minutes") + ".").queue()
         );
 
-        // Создаём embed для ответа в канал
+        // Create an embed to reply to a channel
         EmbedBuilder embedBuilder = new EmbedBuilder();
-        embedBuilder.setTitle("Пользователь замучен");
-        embedBuilder.setDescription(member.getAsMention() + " был замучен на " + duration + " " + (unit.equals("h") ? "часов" : unit.equals("d") ? "дней" : "минут") + ".");
-        embedBuilder.setColor(new Color(255, 0, 0)); // Красный цвет
+        embedBuilder.setTitle("The user is muted");
+        embedBuilder.setDescription(member.getAsMention() + " was muted for " + duration + " " + (unit.equals("h") ? "hours" : unit.equals("d") ? "days" : "minutes") + ".");
+        embedBuilder.setColor(new Color(255, 0, 0)); // Red
         event.replyEmbeds(embedBuilder.build()).queue();
 
-        // Планируем снятие роли "Мут" через указанное время
+        // We plan to remove the role of "Mute" after the specified time.
         event.getGuild().removeRoleFromMember(member, muteRole)
                 .queueAfter(durationInMinutes, TimeUnit.MINUTES, 
                         success -> {
-                            // Уведомляем пользователя о снятии мута
+                            // Notifying the user about the removal of the mute
                             member.getUser().openPrivateChannel().queue(channel -> 
-                                channel.sendMessage("Ваш мут истёк.").queue()
+                                channel.sendMessage("Your mute has expired.").queue()
                             );
                         });
     }
